@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Article {
+  id        Int             @id @default(autoincrement())
+  title     String          @default("")
+  content   String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  images    String?
+  comments  Comment[]
+  likes     LikeToArticle[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement()) // 댓글 ID
+  content   String // 댓글 내용
+  createdAt DateTime @default(now()) // 작성일
+  updatedAt DateTime @updatedAt // 수정일
+  articleId Int // 댓글이 속하는 게시글의 ID (foreign key)
+  article   Article  @relation(fields: [articleId], references: [id])
+}
+
+model Product {
+  id          Int             @id @default(autoincrement())
+  name        String
+  description String
+  price       Int
+  image       String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  likes       LikeToProduct[]
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  userName String
+  email    String @unique
+  password String
+}
+
+model LikeToArticle {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  articleId Int
+  article   Article  @relation(fields: [articleId], references: [id])
+}
+
+model LikeToProduct {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+}
