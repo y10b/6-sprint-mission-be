@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -15,8 +16,8 @@ async function seed() {
             update: {},
             create: {
                 email: 'default@user.com',
-                password: 'dummy-password', // 비밀번호는 실제 사용하지 않으므로 아무 값이나
-                userName: 'DefaultUser',
+                encryptedPassword: await bcrypt.hash('dummy-password', 10), // 비밀번호 해싱
+                nickname: 'DefaultUser',
             },
         });
 

@@ -46,14 +46,15 @@ model Product {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  userName  String    @unique
-  email     String    @unique
-  password  String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  products  Product[]
-  articles  Article[]
+  id                Int       @id @default(autoincrement())
+  nickname          String    @unique
+  email             String    @unique
+  image             String?
+  encryptedPassword String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  products          Product[]
+  articles          Article[]
 }
 
 model LikeToArticle {
