@@ -16,7 +16,7 @@ async function seed() {
             update: {},
             create: {
                 email: 'default@user.com',
-                encryptedPassword: await bcrypt.hash('dummy-password', 10), // 비밀번호 해싱
+                encryptedPassword: await bcrypt.hash('dummy-password', 10),
                 nickname: 'DefaultUser',
             },
         });
@@ -37,10 +37,10 @@ async function seed() {
                         name: product.name,
                         description: product.description,
                         price: product.price,
-                        image: product.images.length > 0 ? product.images[0] : null,
-                        tags: product.tags,
-                        User: {
-                            connect: { id: defaultUser.id }, // 작성자 연결
+                        imageUrl: product.images.length > 0 ? product.images[0] : null,
+                        tags: product.tags, // 'tag'로 수정
+                        seller: {
+                            connect: { id: defaultUser.id },
                         },
                     },
                 });
@@ -48,11 +48,13 @@ async function seed() {
                 const likeCount = product.favoriteCount || 0;
                 const likes = Array.from({ length: likeCount }).map(() => ({
                     productId: createdProduct.id,
+                    userId: defaultUser.id, // 필수!
                 }));
 
                 if (likes.length > 0) {
-                    await prisma.likeToProduct.createMany({
+                    await prisma.like.createMany({
                         data: likes,
+                        skipDuplicates: true,
                     });
                 }
             }

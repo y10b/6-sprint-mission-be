@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import router from './routes/index.js';
-import userRouter from './routes/user.router.js';
+import userRouter from './routes/user.route.js';
 import uploadRouter from './routes/upload.route.js';
 import { errorHandler } from './middlewares/error.middileware.js';
 
