@@ -5,9 +5,9 @@ const prisma = new PrismaClient();
 export const getAllProducts = async (req, res, next) => {
     try {
         const { page = 1, limit = 10, sort = 'latest', search = '' } = req.query;
+        const userId = req.userId; // 로그인된 사용자 ID
         const skip = (Number(page) - 1) * Number(limit);
 
-        // 검색 조건
         const where = search
             ? {
                 OR: [
@@ -17,16 +17,12 @@ export const getAllProducts = async (req, res, next) => {
             }
             : {};
 
-        // 정렬 조건
+        // 좋아요 수를 기준으로 정렬할 때는 aggregate를 사용하여 좋아요 수를 계산합니다.
         let orderBy;
         if (sort === 'likes') {
-            orderBy = {
-                likes: {
-                    _count: 'desc',
-                },
-            };
+            orderBy = [{ likes: { _count: 'desc' } }];
         } else {
-            orderBy = { createdAt: 'desc' };
+            orderBy = [{ createdAt: 'desc' }]; // 최신순 정렬
         }
 
         const [totalCount, products] = await Promise.all([
@@ -37,13 +33,28 @@ export const getAllProducts = async (req, res, next) => {
                 skip,
                 take: Number(limit),
                 include: {
-                    likes: true, // 또는 _count: { select: { likes: true } }
+                    _count: {
+                        select: { likes: true }, // 좋아요 수 카운트
+                    },
+                    likes: userId
+                        ? {
+                            where: { userId },
+                            select: { id: true },
+                        }
+                        : false,
                 },
             }),
         ]);
 
+        // 상품 리스트 포맷 변경: 좋아요 수와 좋아요 여부 추가
+        const formattedProducts = products.map((product) => ({
+            ...product,
+            favoriteCount: product._count.likes, // 좋아요 수 추가
+            isLiked: product.likes?.length > 0, // 해당 사용자가 좋아요를 눌렀는지 여부
+        }));
+
         res.json({
-            list: products,
+            list: formattedProducts,
             totalCount,
         });
     } catch (error) {
