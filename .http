@@ -1,58 +1,78 @@
 ### 전체 products 가져오기
-GET http://localhost:5000/api/products?sort=likes&page=1&limit=10
+GET http://localhost:5000/api/products/1
 
 ### products test(post patch)
-POST   http://localhost:5000/api/products
+PATCH   http://localhost:5000/api/products/301
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0NjY5MDkzMCwiZXhwIjoxNzQ3Mjk1NzMwfQ.0kMaef33C9lLPDyamza0kiQJB6L7ypUy_EEZNrqjl9k
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0Njc1ODU3MCwiZXhwIjoxNzQ3MzYzMzcwfQ.PKY2QPRyJyWrxlpBtiZhc_tWI9aOaTDHuJzj5wLUl88
 
 {
-  "name": "예쁜 인형",
-  "description": "이 인형은 정말 귀여워요!",
-  "price": 12000,
-  "image": "https://example.com/image.jpg"
+  "name": "수정한 예쁜 인형"
 }
 
 ### products 삭제
-DELETE http://localhost:5000/api/products/
+DELETE http://localhost:5000/api/products/308
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0Njc1ODU3MCwiZXhwIjoxNzQ3MzYzMzcwfQ.PKY2QPRyJyWrxlpBtiZhc_tWI9aOaTDHuJzj5wLUl88
 
 ################################################################################
-
-###
-POST http://localhost:5000/api/articles
+### 회원가입
+POST http://localhost:5000/users/register
 Content-Type: application/json
 
 {
-  "title": "New Article",
-  "content": "This is the content of the new article.",
-  "images": "image_url.jpg"
+  "email": "default4@user.com",
+  "encryptedPassword": "dummy-password!",
+  "nickname":"개발자4"
 }
-
-###
-GET http://localhost:5000/articles
-
-###
-GET http://localhost:5000/articles/1
-
-###
-PATCH http://localhost:5000/articles/1
+### 로그인
+POST http://localhost:5000/users/login
 Content-Type: application/json
 
 {
-  "title": "Updated Article Title",
-  "content": "Updated content for the article."
+  "email": "default4@user.com",
+  "encryptedPassword": "dummy-password!"
 }
 
-###
-DELETE http://localhost:5000/articles/
-
-
-#############################################
-###
-post http://localhost:5000/users/login
+### 리프레시 토큰
+POST http://localhost:5000/users/refresh
 Content-Type: application/json
 
 {
-  "email": "example@user.com",
-  "password": "securePassword123!"
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsImlhdCI6MTc0NzAxNzgzNCwiZXhwIjoxNzQ3NjIyNjM0fQ.w7tV0UCEskp7MCKaqPKWuqtyc6Y9P7LW9T-uup5F-EQ"
 }
+
+### 로그아웃 
+POST http://localhost:5000/users/logout
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImlhdCI6MTc0Njc2OTc1NywiZXhwIjoxNzQ2NzcwNjU3fQ.vDTlmPbh511b9TG0S4at_CEaqQs8uKkF4ei0Qw5kuhs
+
+
+### 상품 댓글 요청
+POST http://localhost:5000/api/products/4/comments
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsImlhdCI6MTc0NzA0MjY5MiwiZXhwIjoxNzQ3MDQzNTkyfQ.Hmf3MNai42bkQ41YyVhiC0DRrPMsV9GJCoiTrY57qec
+
+{
+  "content": "이 상품 정말 마음에 들어요!"
+}
+
+### 상품 댓글 조회
+GET http://localhost:5000/api/products/4/comments
+
+### 상품 댓글 수정
+PATCH http://localhost:5000/api/comments/7
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsImlhdCI6MTc0NzA0MjY5MiwiZXhwIjoxNzQ3MDQzNTkyfQ.Hmf3MNai42bkQ41YyVhiC0DRrPMsV9GJCoiTrY57qec
+
+{
+  "content": "수정된 댓글 내용입니다."
+}
+
+
+
+###
+POST http://localhost:5000/api/products/1/like 
+Authorization: Bearer eeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0Njc3NDE4OSwiZXhwIjoxNzQ2Nzc1MDg5fQ.XZcZIIQHSDAsTHxyCNU8_LtVj2RHP9cTI3iNR_pBzZY
+
+###
+DELETE  http://localhost:5000/api/products/1/like 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0Njc1ODU3MCwiZXhwIjoxNzQ3MzYzMzcwfQ.PKY2QPRyJyWrxlpBtiZhc_tWI9aOaTDHuJzj5wLUl88

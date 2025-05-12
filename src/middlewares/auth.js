@@ -2,19 +2,22 @@ import jwt from 'jsonwebtoken';
 const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'your-access-secret';
 
 export const authenticate = (req, res, next) => {
-    const authHeader = req.headers.authorization;
+    let token = req.cookies.accessToken;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ message: '토큰이 필요합니다.' });
+    // Authorization 헤더에서 Bearer 토큰도 허용
+    if (!token && req.headers.authorization?.startsWith("Bearer ")) {
+        token = req.headers.authorization.split(" ")[1];
     }
 
-    const token = authHeader.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: 'Access token이 필요합니다.' });
+    }
 
     try {
         const payload = jwt.verify(token, ACCESS_SECRET);
         req.userId = payload.userId;
         next();
     } catch (error) {
-        res.status(401).json({ message: '유효하지 않은 토큰입니다.' });
+        res.status(401).json({ message: '유효하지 않은 access token입니다.' });
     }
 };

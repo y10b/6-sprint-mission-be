@@ -6,6 +6,7 @@ import {
     createCommentForProduct,
     updateComment,
     deleteComment,
+    getCommentsForProduct,
 } from '../controllers/comment.controller.js';
 import { authenticate } from '../middlewares/auth.js';
 
@@ -18,9 +19,11 @@ commentRouter.post('/articles/:articleId/comments', authenticate, createCommentF
 commentRouter.post('/products/:productId/comments', authenticate, createCommentForProduct);
 
 // 댓글 수정
-commentRouter.put('/comments/:id', authenticate, updateComment);
+commentRouter.patch('/comments/:id', authenticate, updateComment);
 
 // 댓글 삭제
 commentRouter.delete('/comments/:id', authenticate, deleteComment);
 
+//댓글 조회
+commentRouter.get('/products/:productId/comments', getCommentsForProduct);
 export default commentRouter;

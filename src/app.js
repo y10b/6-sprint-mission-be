@@ -4,7 +4,8 @@ import path from 'path';
 import router from './routes/index.js';
 import userRouter from './routes/user.route.js';
 import uploadRouter from './routes/upload.route.js';
-import { errorHandler } from './middlewares/error.middileware.js';
+import { errorHandler } from './middlewares/error.middleware.js';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 const PORT = 5000;
@@ -16,6 +17,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser())
 
 // 정적 파일 서빙 (이미지 접근용)
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));

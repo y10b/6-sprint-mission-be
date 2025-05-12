@@ -4,15 +4,15 @@ const prisma = new PrismaClient();
 
 export const getAllProducts = async (req, res, next) => {
     try {
-        const { page = 1, limit = 10, sort = 'latest', search = '' } = req.query;
+        const { page = 1, limit = 10, sort = 'latest', keyword = '' } = req.query;
         const userId = req.userId; // 로그인된 사용자 ID
         const skip = (Number(page) - 1) * Number(limit);
 
-        const where = search
+        const where = keyword
             ? {
                 OR: [
-                    { name: { contains: search, mode: 'insensitive' } },
-                    { description: { contains: search, mode: 'insensitive' } },
+                    { name: { contains: keyword, mode: 'insensitive' } },
+                    { description: { contains: keyword, mode: 'insensitive' } },
                 ],
             }
             : {};
@@ -68,13 +68,25 @@ export const getProductById = async (req, res) => {
         const product = await prisma.product.findUnique({
             where: { id: Number(id) },
             include: {
-                seller: true, // 상품의 판매자 정보도 함께 가져옵니다.
-                comments: true, // 상품의 댓글을 포함
-                likes: true, // 상품의 좋아요를 포함
+                seller: {
+                    select: {
+                        nickname: true, // 판매자 닉네임만 가져오기
+                    },
+                },
+                comments: true,
+                likes: true,
             },
         });
+
         if (!product) return res.status(404).json({ message: 'Product not found' });
-        res.json(product);
+
+        // 응답 객체에서 닉네임만 분리해서 보내기
+        const { seller, ...rest } = product;
+
+        res.json({
+            ...rest,
+            sellerNickname: seller.nickname,
+        });
     } catch (error) {
         res.status(500).json({ message: 'Failed to get product details', error });
     }

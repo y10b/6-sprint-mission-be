@@ -122,3 +122,40 @@ export const deleteComment = async (req, res) => {
         res.status(500).json({ message: '댓글 삭제 중 오류 발생' });
     }
 };
+
+//상품 댓글 조회
+export const getCommentsForProduct = async (req, res) => {
+    const { productId } = req.params;
+    const { limit = 4, cursor } = req.query;  // limit과 cursor를 query 파라미터로 받음
+
+    try {
+        const commentsQuery = {
+            where: { productId: Number(productId) },
+            include: {
+                user: { select: { id: true, nickname: true } },
+            },
+            orderBy: {
+                createdAt: 'desc', // 최신 댓글부터 표시
+            },
+            take: Number(limit), // limit 개수만큼 가져옴
+        };
+
+        if (cursor) {
+            commentsQuery.cursor = { id: Number(cursor) }; // cursor가 있다면 해당 id부터 가져옴
+            commentsQuery.skip = 1; // cursor는 포함하지 않기 위해 skip 1
+        }
+
+        const comments = await prisma.comment.findMany(commentsQuery);
+
+        // 다음 커서 계산
+        const nextCursor = comments.length === Number(limit) ? comments[comments.length - 1].id : null;
+
+        res.status(200).json({
+            list: comments,
+            nextCursor,  // 다음 커서 전달
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: '댓글 조회 중 오류 발생' });
+    }
+};

@@ -41,6 +41,27 @@ export const registerUser = async (req, res) => {
             },
         });
 
+        const accessToken = createAccessToken(newUser);
+        const refreshToken = createRefreshToken(newUser);
+
+        await prisma.user.update({
+            where: { id: newUser.id },
+            data: { refreshToken },
+        });
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'Lax',
+            maxAge: 1000 * 60 * 15, // 15분
+        });
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'Lax',
+            maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
+        });
+
         res.status(201).json({
             id: newUser.id,
             email: newUser.email,
@@ -53,17 +74,14 @@ export const registerUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-    const { email, encryptedPassword } = req.body; // 회원가입과 동일하게 이름 맞춤
+    const { email, encryptedPassword } = req.body;
 
     if (!email || !encryptedPassword) {
         return res.status(400).json({ message: '이메일과 비밀번호를 입력해주세요.' });
     }
 
     try {
-        const user = await prisma.user.findUnique({
-            where: { email }
-        });
-
+        const user = await prisma.user.findUnique({ where: { email } });
         if (!user) {
             return res.status(401).json({ message: '잘못된 이메일입니다.' });
         }
@@ -81,17 +99,28 @@ export const loginUser = async (req, res) => {
             data: { refreshToken },
         });
 
-        res.json({
-            accessToken,
-            refreshToken,
+        // ✅ 쿠키 설정
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 1000 * 60 * 15, // 15분
         });
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
+        });
+
+        res.json({ message: '로그인 성공' });
 
     } catch (error) {
         console.error("Login error:", error);
         res.status(500).json({ message: '로그인 실패', error });
     }
 };
-
 export const getMyProfile = async (req, res) => {
     const userId = req.userId;
     const user = await prisma.user.findUnique({
@@ -110,13 +139,16 @@ export const logoutUser = async (req, res) => {
     const userId = req.userId;
 
     try {
-        // DB에서 리프레시 토큰 삭제
         await prisma.user.update({
             where: { id: userId },
             data: { refreshToken: null },
         });
 
+        // ✅ 쿠키 삭제
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
         res.json({ message: '로그아웃되었습니다.' });
+
     } catch (error) {
         console.error('Logout error:', error);
         res.status(500).json({ message: '로그아웃 중 오류 발생' });
