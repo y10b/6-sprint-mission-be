@@ -42,15 +42,17 @@ export const getAllProducts = async (req, res, next) => {
                             select: { id: true },
                         }
                         : false,
+                    images: true, // 이미지도 포함
                 },
             }),
         ]);
 
-        // 상품 리스트 포맷 변경: 좋아요 수와 좋아요 여부 추가
-        const formattedProducts = products.map(({ _count, likes, ...rest }) => ({
+        // 상품 리스트 포맷 변경: 좋아요 수, 좋아요 여부, 이미지 추가
+        const formattedProducts = products.map(({ _count, likes, images, ...rest }) => ({
             ...rest,
-            favoriteCount: _count.likes,        // 좋아요 수
-            isLiked: likes?.length > 0,         // 사용자가 좋아요 눌렀는지 여부
+            favoriteCount: _count.likes, // 좋아요 수
+            isLiked: likes?.length > 0,  // 사용자가 좋아요 눌렀는지 여부
+            images: images.map(image => image.url), // 이미지 URL 배열
         }));
 
         res.json({
@@ -72,11 +74,12 @@ export const getProductById = async (req, res) => {
             include: {
                 comments: true,
                 _count: {
-                    select: { likes: true },
+                    select: { likes: true }, // 좋아요 수 카운트
                 },
                 seller: {
                     select: { nickname: true },
                 },
+                images: true, // 제품 이미지도 포함
             },
         });
 
@@ -85,7 +88,6 @@ export const getProductById = async (req, res) => {
         }
 
         let isLiked = false;
-
         if (userId) {
             const like = await prisma.like.findFirst({
                 where: {
@@ -93,26 +95,27 @@ export const getProductById = async (req, res) => {
                     userId,
                 },
             });
-            isLiked = !!like;
+            isLiked = !!like; // 좋아요가 있으면 isLiked를 true로 설정
         }
 
-        const { _count, seller, ...rest } = product;
+        const { _count, seller, images, ...rest } = product;
 
         return res.json({
             ...rest,
-            favoriteCount: _count.likes,
-            sellerNickname: seller.nickname,
-            isLiked,
+            favoriteCount: _count.likes,  // 좋아요 수
+            sellerNickname: seller.nickname, // 판매자 닉네임
+            isLiked, // 사용자가 좋아요를 눌렀는지 여부
+            images: images.map(image => image.url), // 이미지 URL 배열 반환
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Failed to get product details', error });
+        res.status(500).json({ message: '상품 세부 정보 조회 실패', error });
     }
 };
 
 export const createProduct = async (req, res) => {
-    const { name, description, price, imageUrl, tags } = req.body;
-    const userId = req.userId; // 인증된 사용자의 ID
+    const { name, description, price, imageUrls, tags } = req.body; // imageUrl을 imageUrls로 변경하여 여러 이미지를 처리
+    const userId = req.userId;
 
     try {
         const newProduct = await prisma.product.create({
@@ -120,9 +123,11 @@ export const createProduct = async (req, res) => {
                 name,
                 description,
                 price,
-                imageUrl, // 이미지 URL을 받아서 저장
                 tags, // 태그 배열을 그대로 저장
-                seller: { connect: { id: userId } }, // 'seller'는 'User' 모델에 연결
+                seller: { connect: { id: userId } }, // 판매자와 유저 연결
+                images: {
+                    create: imageUrls.map(url => ({ url })), // 이미지 배열을 받아서 여러 이미지를 생성
+                },
             },
         });
         res.status(201).json(newProduct);
@@ -164,20 +169,39 @@ export const deleteProduct = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const product = await prisma.product.findUnique({ where: { id: Number(id) } });
+        const product = await prisma.product.findUnique({
+            where: { id: Number(id) },
+        });
 
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }
 
-        // 요청한 유저가 해당 상품의 작성자인지 확인
         if (product.sellerId !== req.userId) {
             return res.status(403).json({ message: 'You do not have permission to delete this product.' });
         }
 
-        await prisma.product.delete({ where: { id: Number(id) } });
+        // 하위 데이터 먼저 삭제
+        await prisma.comment.deleteMany({
+            where: { productId: Number(id) },
+        });
+
+        await prisma.like.deleteMany({
+            where: { productId: Number(id) },
+        });
+
+        await prisma.productImage.deleteMany({
+            where: { productId: Number(id) },
+        });
+
+        // 최종적으로 Product 삭제
+        await prisma.product.delete({
+            where: { id: Number(id) },
+        });
+
         res.status(204).send();
     } catch (error) {
-        res.status(500).json({ message: 'Failed to delete product.' });
+        console.error('삭제 중 에러:', error);
+        res.status(500).json({ message: 'Failed to delete product.', error });
     }
 };

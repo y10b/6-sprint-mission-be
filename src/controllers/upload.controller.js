@@ -3,6 +3,6 @@ export const uploadImage = (req, res) => {
         return res.status(400).json({ message: '이미지 파일이 필요합니다.' });
     }
 
-    const filePath = `/uploads/${req.file.filename}`;  // 클라이언트에게 제공할 경로
-    res.status(200).json({ imagePath: filePath });
+    const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    res.status(200).json({ imageUrl });
 };

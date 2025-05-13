@@ -123,16 +123,31 @@ export const loginUser = async (req, res) => {
 };
 export const getMyProfile = async (req, res) => {
     const userId = req.userId;
-    const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-            id: true,
-            email: true,
-            nickname: true,
-            createdAt: true,
-        },
-    });
-    res.json(user);
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                email: true,
+                nickname: true,
+                createdAt: true,
+                image: true, // 유저 이미지 필드 포함
+            },
+        });
+
+        // 유저가 이미지를 가지고 있다면, 이미지 URL을 포함해서 응답
+        const userProfile = {
+            ...user,
+            image: user.image ? user.image : null, // 이미지가 있을 경우에만 포함
+        };
+
+        res.json(userProfile);
+
+    } catch (error) {
+        console.error('Profile fetch error:', error);
+        res.status(500).json({ message: '프로필을 가져오는 중 오류 발생' });
+    }
 };
 
 export const logoutUser = async (req, res) => {

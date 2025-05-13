@@ -10,7 +10,7 @@ async function seed() {
     let hasMoreData = true;
 
     try {
-        // 0. 임시 유저 생성 또는 조회
+        // 0. 기본 유저 생성
         const defaultUser = await prisma.user.upsert({
             where: { email: 'default@user.com' },
             update: {},
@@ -37,33 +37,45 @@ async function seed() {
                         name: product.name,
                         description: product.description,
                         price: product.price,
-                        imageUrl: product.images.length > 0 ? product.images[0] : null,
-                        tags: product.tags, // 'tag'로 수정
-                        seller: {
-                            connect: { id: defaultUser.id },
-                        },
+                        tags: product.tags,
+                        seller: { connect: { id: defaultUser.id } },
                     },
                 });
 
+                // 이미지들 저장
+                if (product.images && product.images.length > 0) {
+                    const imageData = product.images.map((url) => ({
+                        url,
+                        productId: createdProduct.id,
+                    }));
+
+                    await prisma.productImage.createMany({
+                        data: imageData,
+                        skipDuplicates: true,
+                    });
+                }
+
+                // 좋아요 생성 (defaultUser가 여러 번 누른 척, 중복 제거됨)
                 const likeCount = product.favoriteCount || 0;
-                const likes = Array.from({ length: likeCount }).map(() => ({
+
+                const likeData = Array.from({ length: likeCount }).map(() => ({
                     productId: createdProduct.id,
-                    userId: defaultUser.id, // 필수!
+                    userId: defaultUser.id,
                 }));
 
-                if (likes.length > 0) {
+                if (likeData.length > 0) {
                     await prisma.like.createMany({
-                        data: likes,
+                        data: likeData,
                         skipDuplicates: true,
                     });
                 }
             }
 
-            console.log(`Page ${currentPage} 시딩 완료!`);
+            console.log(`✅ Page ${currentPage} 시딩 완료!`);
             currentPage++;
         }
 
-        console.log('✅ 모든 데이터 시딩 완료!');
+        console.log('🎉 모든 데이터 시딩 완료!');
     } catch (error) {
         console.error('❌ 시딩 중 오류 발생:', error);
     } finally {
