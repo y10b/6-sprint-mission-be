@@ -38,7 +38,7 @@ export const getAllProducts = async (req, res, next) => {
                     },
                     likes: userId
                         ? {
-                            where: { userId },
+                            where: { userId }, // 로그인한 사용자 기준으로 좋아요 여부 확인
                             select: { id: true },
                         }
                         : false,
@@ -47,10 +47,10 @@ export const getAllProducts = async (req, res, next) => {
         ]);
 
         // 상품 리스트 포맷 변경: 좋아요 수와 좋아요 여부 추가
-        const formattedProducts = products.map((product) => ({
-            ...product,
-            favoriteCount: product._count.likes, // 좋아요 수 추가
-            isLiked: product.likes?.length > 0, // 해당 사용자가 좋아요를 눌렀는지 여부
+        const formattedProducts = products.map(({ _count, likes, ...rest }) => ({
+            ...rest,
+            favoriteCount: _count.likes,        // 좋아요 수
+            isLiked: likes?.length > 0,         // 사용자가 좋아요 눌렀는지 여부
         }));
 
         res.json({
@@ -64,30 +64,48 @@ export const getAllProducts = async (req, res, next) => {
 
 export const getProductById = async (req, res) => {
     const { id } = req.params;
+    const userId = req.userId;
+
     try {
         const product = await prisma.product.findUnique({
             where: { id: Number(id) },
             include: {
-                seller: {
-                    select: {
-                        nickname: true, // 판매자 닉네임만 가져오기
-                    },
-                },
                 comments: true,
-                likes: true,
+                _count: {
+                    select: { likes: true },
+                },
+                seller: {
+                    select: { nickname: true },
+                },
             },
         });
 
-        if (!product) return res.status(404).json({ message: 'Product not found' });
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
 
-        // 응답 객체에서 닉네임만 분리해서 보내기
-        const { seller, ...rest } = product;
+        let isLiked = false;
 
-        res.json({
+        if (userId) {
+            const like = await prisma.like.findFirst({
+                where: {
+                    productId: Number(id),
+                    userId,
+                },
+            });
+            isLiked = !!like;
+        }
+
+        const { _count, seller, ...rest } = product;
+
+        return res.json({
             ...rest,
+            favoriteCount: _count.likes,
             sellerNickname: seller.nickname,
+            isLiked,
         });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: 'Failed to get product details', error });
     }
 };

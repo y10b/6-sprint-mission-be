@@ -12,7 +12,7 @@ import { validateProductInput } from '../middlewares/validateProductInput.js'
 const productRouter = Router()
 
 productRouter.get('/products', getAllProducts)
-productRouter.get('/products/:id', getProductById)
+productRouter.get('/products/:id', authenticate, getProductById)
 productRouter.post('/products', authenticate, validateProductInput, createProduct)
 productRouter.patch('/products/:id', authenticate, updateProduct)
 productRouter.delete('/products/:id', authenticate, deleteProduct)

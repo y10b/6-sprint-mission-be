@@ -15,19 +15,23 @@ export const toggleLikeForProduct = async (req, res) => {
             },
         });
 
-        if (existing) {
-            await prisma.like.delete({ where: { id: existing.id } });
-        } else {
-            await prisma.like.create({
-                data: {
-                    userId,
-                    productId: Number(productId),
-                },
-            });
-        }
+        let favoriteCount;
 
-        const favoriteCount = await prisma.like.count({
-            where: { productId: Number(productId) },
+        await prisma.$transaction(async (tx) => {
+            if (existing) {
+                await tx.like.delete({ where: { id: existing.id } });
+            } else {
+                await tx.like.create({
+                    data: {
+                        userId,
+                        productId: Number(productId),
+                    },
+                });
+            }
+
+            favoriteCount = await tx.like.count({
+                where: { productId: Number(productId) },
+            });
         });
 
         return res.json({
@@ -58,13 +62,13 @@ export const removeLikeForProduct = async (req, res) => {
             return res.status(404).json({ message: '좋아요를 찾을 수 없습니다.' });
         }
 
-        await prisma.like.delete({
-            where: { id: existing.id },
-        });
+        let favoriteCount;
 
-        // ✅ 삭제 후 좋아요 수 재계산
-        const favoriteCount = await prisma.like.count({
-            where: { productId: Number(productId) },
+        await prisma.$transaction(async (tx) => {
+            await tx.like.delete({ where: { id: existing.id } });
+            favoriteCount = await tx.like.count({
+                where: { productId: Number(productId) },
+            });
         });
 
         res.json({
@@ -92,20 +96,23 @@ export const toggleLikeForArticle = async (req, res) => {
             },
         });
 
-        if (existing) {
-            await prisma.like.delete({ where: { id: existing.id } });
-        } else {
-            await prisma.like.create({
-                data: {
-                    userId,
-                    articleId: Number(articleId),
-                },
-            });
-        }
+        let favoriteCount;
 
-        // ✅ 게시글 좋아요 수 재계산
-        const favoriteCount = await prisma.like.count({
-            where: { articleId: Number(articleId) },
+        await prisma.$transaction(async (tx) => {
+            if (existing) {
+                await tx.like.delete({ where: { id: existing.id } });
+            } else {
+                await tx.like.create({
+                    data: {
+                        userId,
+                        articleId: Number(articleId),
+                    },
+                });
+            }
+
+            favoriteCount = await tx.like.count({
+                where: { articleId: Number(articleId) },
+            });
         });
 
         return res.json({
@@ -118,7 +125,6 @@ export const toggleLikeForArticle = async (req, res) => {
     }
 };
 
-// ✅ 게시글 좋아요 삭제
 export const removeLikeForArticle = async (req, res) => {
     const { articleId } = req.params;
     const userId = req.userId;
@@ -137,13 +143,16 @@ export const removeLikeForArticle = async (req, res) => {
             return res.status(404).json({ message: '좋아요를 찾을 수 없습니다.' });
         }
 
-        await prisma.like.delete({
-            where: { id: existing.id },
-        });
+        let favoriteCount;
 
-        // ✅ 삭제 후 좋아요 수 재계산
-        const favoriteCount = await prisma.like.count({
-            where: { articleId: Number(articleId) },
+        await prisma.$transaction(async (tx) => {
+            await tx.like.delete({
+                where: { id: existing.id },
+            });
+
+            favoriteCount = await tx.like.count({
+                where: { articleId: Number(articleId) },
+            });
         });
 
         return res.json({
