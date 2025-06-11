@@ -2,17 +2,40 @@
 GET http://localhost:5000/api/products/1
 
 ### products test(post patch)
-PATCH   http://localhost:5000/api/products/301
+PATCH   http://localhost:5000/api/products/313
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0Njc1ODU3MCwiZXhwIjoxNzQ3MzYzMzcwfQ.PKY2QPRyJyWrxlpBtiZhc_tWI9aOaTDHuJzj5wLUl88
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTYyMjAxMSwiZXhwIjoxNzQ5NjIyOTExfQ.tI7AFJiWJAsqka6Xf42u8IkXDgT_EEZRR5fXIVwasvY
 
 {
-  "name": "수정한 예쁜 인형"
+  "name": "수정한1 예쁜 인형",
+  "description": "수정한 예쁜 인형 설명",
+  "price": 1000000,
+  "tags": ["전자기기", "노트북", "바나나"],
+  "imageUrls":[
+    "/uploads/1747118042578-670427632.jpg",
+    "/uploads/1747118042578-670427634.jpg"
+  ]
+}
+
+### 상품 생성
+POST http://localhost:5000/api/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTYyMjAxMSwiZXhwIjoxNzQ5NjIyOTExfQ.tI7AFJiWJAsqka6Xf42u8IkXDgT_EEZRR5fXIVwasvY
+
+{
+    "name": "맥북 프로 M3",
+    "description": "2024년 새로 구매한 맥북 프로 M3 판매합니다. 상태 최상입니다.",
+    "price": 2000000,
+    "tags": ["전자기기", "노트북", "애플"],
+    "imageUrls": [
+        "/uploads/1747118042578-670427633.jpg",
+        "/uploads/1747124502848-45436661.jpg"
+    ]
 }
 
 ### products 삭제
-DELETE http://localhost:5000/api/products/308
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0Njc1ODU3MCwiZXhwIjoxNzQ3MzYzMzcwfQ.PKY2QPRyJyWrxlpBtiZhc_tWI9aOaTDHuJzj5wLUl88
+DELETE http://localhost:5000/api/products/313
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTYyMjAxMSwiZXhwIjoxNzQ5NjIyOTExfQ.tI7AFJiWJAsqka6Xf42u8IkXDgT_EEZRR5fXIVwasvY
 
 ################################################################################
 ### 회원가입
@@ -20,59 +43,61 @@ POST http://localhost:5000/users/register
 Content-Type: application/json
 
 {
-  "email": "default4@user.com",
+  "email": "default2@user.com",
   "encryptedPassword": "dummy-password!",
-  "nickname":"개발자4"
+  "nickname":"ga"
 }
 ### 로그인
 POST http://localhost:5000/users/login
 Content-Type: application/json
 
 {
-  "email": "default4@user.com",
+  "email": "default2@user.com",
   "encryptedPassword": "dummy-password!"
 }
 
 ### 리프레시 토큰
 POST http://localhost:5000/users/refresh
-Content-Type: application/json
-
-{
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsImlhdCI6MTc0NzAxNzgzNCwiZXhwIjoxNzQ3NjIyNjM0fQ.w7tV0UCEskp7MCKaqPKWuqtyc6Y9P7LW9T-uup5F-EQ"
-}
+Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTc0OTYyMjMyNywiZXhwIjoxNzUwMjI3MTI3fQ.F0E6MEKvKKyroSO29jgtxBjTi7E0Bz3ayHEcFVRpw4k
 
 ### 로그아웃 
 POST http://localhost:5000/users/logout
-Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImlhdCI6MTc0Njc2OTc1NywiZXhwIjoxNzQ2NzcwNjU3fQ.vDTlmPbh511b9TG0S4at_CEaqQs8uKkF4ei0Qw5kuhs
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTc0OTYyMjMwNiwiZXhwIjoxNzQ5NjIzMjA2fQ.A4-deh41hCwpsuF4okC7ipOwyhHLmMR39eR6Y8vCNVQ
 
+
+################################################################################
 
 ### 상품 댓글 요청
-POST http://localhost:5000/api/products/4/comments
+POST http://localhost:5000/api/products/1/comments
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsImlhdCI6MTc0NzA0MjY5MiwiZXhwIjoxNzQ3MDQzNTkyfQ.Hmf3MNai42bkQ41YyVhiC0DRrPMsV9GJCoiTrY57qec
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTc0OTYyMjMwNiwiZXhwIjoxNzQ5NjIzMjA2fQ.A4-deh41hCwpsuF4okC7ipOwyhHLmMR39eR6Y8vCNVQ
 
 {
   "content": "이 상품 정말 마음에 들어요!"
 }
 
 ### 상품 댓글 조회
-GET http://localhost:5000/api/products/4/comments
+GET http://localhost:5000/api/products/1/comments
 
 ### 상품 댓글 수정
-PATCH http://localhost:5000/api/comments/7
+PATCH http://localhost:5000/api/comments/2
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsImlhdCI6MTc0NzA0MjY5MiwiZXhwIjoxNzQ3MDQzNTkyfQ.Hmf3MNai42bkQ41YyVhiC0DRrPMsV9GJCoiTrY57qec
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTc0OTYyMjMwNiwiZXhwIjoxNzQ5NjIzMjA2fQ.A4-deh41hCwpsuF4okC7ipOwyhHLmMR39eR6Y8vCNVQ
 
 {
   "content": "수정된 댓글 내용입니다."
 }
 
+###
+DELETE http://localhost:5000/api/comments/2
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTc0OTYyMjMwNiwiZXhwIjoxNzQ5NjIzMjA2fQ.A4-deh41hCwpsuF4okC7ipOwyhHLmMR39eR6Y8vCNVQ
 
 
 ###
 POST http://localhost:5000/api/products/1/like 
-Authorization: Bearer eeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0Njc3NDE4OSwiZXhwIjoxNzQ2Nzc1MDg5fQ.XZcZIIQHSDAsTHxyCNU8_LtVj2RHP9cTI3iNR_pBzZY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTc0OTYyMjMwNiwiZXhwIjoxNzQ5NjIzMjA2fQ.A4-deh41hCwpsuF4okC7ipOwyhHLmMR39eR6Y8vCNVQ
 
 ###
 DELETE  http://localhost:5000/api/products/1/like 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0Njc1ODU3MCwiZXhwIjoxNzQ3MzYzMzcwfQ.PKY2QPRyJyWrxlpBtiZhc_tWI9aOaTDHuJzj5wLUl88
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTc0OTYyMjMwNiwiZXhwIjoxNzQ5NjIzMjA2fQ.A4-deh41hCwpsuF4okC7ipOwyhHLmMR39eR6Y8vCNVQ
