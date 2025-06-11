@@ -74,7 +74,7 @@ export class UserService {
     });
 
     if (!user) {
-      throw new NotFoundError("사용자를 찾을 수 없습니다.");
+      throw new BadRequestError("이메일 또는 비밀번호가 일치하지 않습니다.");
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -83,7 +83,7 @@ export class UserService {
     );
 
     if (!isPasswordValid) {
-      throw new BadRequestError("비밀번호가 일치하지 않습니다.");
+      throw new BadRequestError("이메일 또는 비밀번호가 일치하지 않습니다.");
     }
 
     const accessToken = jwt.sign({ userId: user.id }, this.jwtSecret, {

@@ -102,6 +102,12 @@ export const logoutUser = async (
       return;
     }
 
+    // 데이터베이스에서 refreshToken 제거
+    await prisma.user.update({
+      where: { id: userId },
+      data: { refreshToken: null },
+    });
+
     // refreshToken 쿠키 제거
     res.clearCookie("refreshToken");
     res.json({ message: "로그아웃되었습니다." });
