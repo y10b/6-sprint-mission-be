@@ -58,12 +58,21 @@ export const loginUser = async (
     // refreshToken을 httpOnly 쿠키로 설정
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production", // 개발환경에서는 false, 프로덕션에서는 true
+      sameSite: "lax", // CSRF 방지
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7일
     });
 
-    res.json({ accessToken, user });
+    // accessToken도 httpOnly 쿠키로 설정
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // 개발환경에서는 false, 프로덕션에서는 true
+      sameSite: "lax", // CSRF 방지
+      maxAge: 15 * 60 * 1000, // 15분
+    });
+
+    // 응답에는 사용자 정보만 포함
+    res.json({ user });
   } catch (error) {
     next(error);
   }
@@ -108,8 +117,10 @@ export const logoutUser = async (
       data: { refreshToken: null },
     });
 
-    // refreshToken 쿠키 제거
+    // 쿠키 제거
     res.clearCookie("refreshToken");
+    res.clearCookie("accessToken");
+
     res.json({ message: "로그아웃되었습니다." });
   } catch (error) {
     next(error);

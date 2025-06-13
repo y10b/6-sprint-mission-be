@@ -70,7 +70,7 @@ Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdC
 ### 상품 댓글 요청
 POST http://localhost:5000/api/products/1/comments
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTc0OTYyMjMwNiwiZXhwIjoxNzQ5NjIzMjA2fQ.A4-deh41hCwpsuF4okC7ipOwyhHLmMR39eR6Y8vCNVQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTc0OTcxODkwNSwiZXhwIjoxNzQ5NzE5ODA1fQ.27fed0ER0H1KZloLPUM5WJ1qA4szw7qCOKnFFYYwp4w
 
 {
   "content": "이 상품 정말 마음에 들어요!"

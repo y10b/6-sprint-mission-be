@@ -24,11 +24,17 @@ export const refreshAccessToken = async (
   try {
     const newAccessToken = await authService.refreshAccessToken(refreshToken);
 
+    // 새로운 액세스 토큰을 쿠키에 설정
+    res.cookie("accessToken", newAccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000, // 15분
+    });
+
     res.json({
       success: true,
-      data: {
-        accessToken: newAccessToken,
-      },
+      message: "액세스 토큰이 갱신되었습니다.",
     });
   } catch (error) {
     console.error("Refresh error:", error);

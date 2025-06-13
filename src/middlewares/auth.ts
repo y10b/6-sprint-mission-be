@@ -20,8 +20,14 @@ const verifyToken = (token: string) => {
 
 const createAuthMiddleware = (required: boolean): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
+    // 먼저 쿠키에서 토큰 확인
+    let token = req.cookies.accessToken;
+
+    // 쿠키에 없다면 Authorization 헤더 확인
+    if (!token) {
+      const authHeader = req.headers["authorization"];
+      token = authHeader && authHeader.split(" ")[1];
+    }
 
     if (!token) {
       if (required) {
