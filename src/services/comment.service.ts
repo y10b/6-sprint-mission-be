@@ -133,4 +133,21 @@ export class CommentService {
       },
     });
   }
+
+  async getCommentsForArticle(articleId: number): Promise<Comment[]> {
+    return this.prisma.comment.findMany({
+      where: { articleId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            nickname: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  }
 }

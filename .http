@@ -22,15 +22,15 @@ Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdC
 
 ### 로그아웃 
 POST http://localhost:5000/users/logout
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc4OTU0OCwiZXhwIjoxNzQ5NzkwNDQ4fQ.b2f5a-MdRREJqBqAE0jU32pJ7N1V0VtmEwNT1dDITz8
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
 
 ### 전체 products 가져오기
 GET http://localhost:5000/api/products/1
 
 ### products test(post patch)
-PATCH   http://localhost:5000/api/products/313
+PATCH   http://localhost:5000/api/products/315
 Content-Type: application/json
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc4OTM1NiwiZXhwIjoxNzQ5NzkwMjU2fQ.jOFc20vuNsX5FNMt0cIXSYa6AHMS-yrFvPf_wRnSEyo
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
 
 {
   "name": "수정한1 예쁜 인형",
@@ -46,7 +46,7 @@ Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI
 ### 상품 생성
 POST http://localhost:5000/api/products
 Content-Type: application/json
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc4OTM1NiwiZXhwIjoxNzQ5NzkwMjU2fQ.jOFc20vuNsX5FNMt0cIXSYa6AHMS-yrFvPf_wRnSEyo
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
 
 {
     "name": "맥북 프로 M3",
@@ -60,8 +60,8 @@ Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI
 }
 
 ### products 삭제
-DELETE http://localhost:5000/api/products/313
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc4OTM1NiwiZXhwIjoxNzQ5NzkwMjU2fQ.jOFc20vuNsX5FNMt0cIXSYa6AHMS-yrFvPf_wRnSEyo
+DELETE http://localhost:5000/api/products/315
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
 
 ################################################################################
 ### 게시글 목록 조회
@@ -69,12 +69,12 @@ GET http://localhost:5000/api/articles
 
 ###게시글 상세 조회
 GET http://localhost:5000/api/articles/1
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc4ODc3OSwiZXhwIjoxNzQ5Nzg5Njc5fQ.FLjuAwVKhXjvz_dvJyA65vcrEcCA8XfDZZaSKXhegCc
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
 
 ###게시글 생성
 POST http://localhost:5000/api/articles
 Content-Type: application/json
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5MTUxOSwiZXhwIjoxNzQ5NzkyNDE5fQ.mghrlg4wcw24Bww5Ihops91511CeMGFzy-k8yBv4XG0
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
 
 {
   "title": "새로운 게시글",
@@ -82,9 +82,9 @@ Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI
 }
 
 ###게시글 수정
-PATCH http://localhost:5000/api/articles/332
+PATCH http://localhost:5000/api/articles/333
 Content-Type: application/json
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc4ODc3OSwiZXhwIjoxNzQ5Nzg5Njc5fQ.FLjuAwVKhXjvz_dvJyA65vcrEcCA8XfDZZaSKXhegCc
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
 
 {
   "title": "수정된 게시글",
@@ -92,16 +92,16 @@ Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI
 }
 
 ###게시글 삭제
-DELETE http://localhost:5000/api/articles/332
+DELETE http://localhost:5000/api/articles/333
 Content-Type: application/json
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc4ODc3OSwiZXhwIjoxNzQ5Nzg5Njc5fQ.FLjuAwVKhXjvz_dvJyA65vcrEcCA8XfDZZaSKXhegCc
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
 
 ################################################################################
 
 ### 상품 댓글 요청
 POST http://localhost:5000/api/products/1/comments
 Content-Type: application/json
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc4ODc3OSwiZXhwIjoxNzQ5Nzg5Njc5fQ.FLjuAwVKhXjvz_dvJyA65vcrEcCA8XfDZZaSKXhegCc
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
 
 {
   "content": "이 상품 정말 마음에 들어요!"
@@ -110,26 +110,46 @@ Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI
 ### 상품 댓글 조회
 GET http://localhost:5000/api/products/1/comments
 
-### 댓글 수정
-PATCH http://localhost:5000/api/comments/2
+### 게시글 댓글 요청
+POST http://localhost:5000/api/articles/1/comments
 Content-Type: application/json
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc4ODc3OSwiZXhwIjoxNzQ5Nzg5Njc5fQ.FLjuAwVKhXjvz_dvJyA65vcrEcCA8XfDZZaSKXhegCc
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
+
+{
+  "content": "이 게시글 정말 마음에 들어요!"
+}
+
+### 게시글 댓글 조회
+GET http://localhost:5000/api/articles/1/comments
+
+### 댓글 수정
+PATCH http://localhost:5000/api/comments/3
+Content-Type: application/json
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
 
 {
   "content": "수정된 댓글 내용입니다."
 }
 
 ### 댓글 삭제
-DELETE http://localhost:5000/api/comments/2
+DELETE http://localhost:5000/api/comments/3
 Content-Type: application/json
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc4ODc3OSwiZXhwIjoxNzQ5Nzg5Njc5fQ.FLjuAwVKhXjvz_dvJyA65vcrEcCA8XfDZZaSKXhegCc
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
 
 ################################################################################
 
 ### 상품 좋아요
 POST http://localhost:5000/api/products/1/like 
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc4ODc3OSwiZXhwIjoxNzQ5Nzg5Njc5fQ.FLjuAwVKhXjvz_dvJyA65vcrEcCA8XfDZZaSKXhegCc
+Cookie:accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NzY3NiwiZXhwIjoxNzQ5Nzk4NTc2fQ.GBi15AOK1G1wA_RTZZRP-6CYOt3AphjNx2_YEdbzzMk
 
 ### 상품 좋아요 취소
 DELETE  http://localhost:5000/api/products/1/like 
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc4ODc3OSwiZXhwIjoxNzQ5Nzg5Njc5fQ.FLjuAwVKhXjvz_dvJyA65vcrEcCA8XfDZZaSKXhegCc
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NzY3NiwiZXhwIjoxNzQ5Nzk4NTc2fQ.GBi15AOK1G1wA_RTZZRP-6CYOt3AphjNx2_YEdbzzMk
+
+### 게시글 좋아요
+POST http://localhost:5000/api/articles/1/like
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NzY3NiwiZXhwIjoxNzQ5Nzk4NTc2fQ.GBi15AOK1G1wA_RTZZRP-6CYOt3AphjNx2_YEdbzzMk
+
+### 게시글 좋아요 취소
+DELETE http://localhost:5000/api/articles/1/like
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NzY3NiwiZXhwIjoxNzQ5Nzk4NTc2fQ.GBi15AOK1G1wA_RTZZRP-6CYOt3AphjNx2_YEdbzzMk

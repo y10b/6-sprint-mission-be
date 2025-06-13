@@ -126,3 +126,20 @@ export const getCommentsForProduct = async (
     next(error);
   }
 };
+
+// 게시글의 댓글 조회
+export const getCommentsForArticle = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { articleId } = req.params;
+    const comments = await commentService.getCommentsForArticle(
+      Number(articleId)
+    );
+    res.json(comments);
+  } catch (error) {
+    next(error);
+  }
+};

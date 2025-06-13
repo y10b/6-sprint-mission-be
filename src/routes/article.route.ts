@@ -1,6 +1,14 @@
 import { Router } from "express";
 import { ArticleController } from "../controllers/article.controller";
 import { authenticateToken } from "../middlewares/auth";
+import {
+  toggleLikeForArticle,
+  removeLikeForArticle,
+} from "../controllers/like.controller";
+import {
+  createCommentForArticle,
+  getCommentsForArticle,
+} from "../controllers/comment.controller";
 
 const router = Router();
 const articleController = new ArticleController();
@@ -35,5 +43,17 @@ router.delete(
   authenticateToken,
   articleController.deleteArticle.bind(articleController)
 );
+
+// 게시글 좋아요 토글
+router.post("/:articleId/like", authenticateToken, toggleLikeForArticle);
+
+// 게시글 좋아요 취소
+router.delete("/:articleId/like", authenticateToken, removeLikeForArticle);
+
+// 게시글 댓글 작성
+router.post("/:articleId/comments", authenticateToken, createCommentForArticle);
+
+// 게시글 댓글 조회
+router.get("/:articleId/comments", getCommentsForArticle);
 
 export default router;
