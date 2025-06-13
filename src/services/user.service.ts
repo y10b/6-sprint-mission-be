@@ -4,13 +4,7 @@ import jwt from "jsonwebtoken";
 import { BadRequestError, NotFoundError } from "../utils/customError";
 
 interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
-  user: {
-    id: number;
-    email: string;
-    nickname: string;
-  };
+  user: User;
 }
 
 export class UserService {
@@ -86,29 +80,7 @@ export class UserService {
       throw new BadRequestError("이메일 또는 비밀번호가 일치하지 않습니다.");
     }
 
-    const accessToken = jwt.sign({ userId: user.id }, this.jwtSecret, {
-      expiresIn: "15m",
-    });
-
-    const refreshToken = jwt.sign({ userId: user.id }, this.jwtSecret, {
-      expiresIn: "7d",
-    });
-
-    // refreshToken 업데이트
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { refreshToken },
-    });
-
-    return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        nickname: user.nickname,
-      },
-    };
+    return { user };
   }
 
   async getProfile(

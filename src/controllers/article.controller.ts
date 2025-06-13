@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { NotFoundError, BadRequestError } from "../utils/customError";
 import { ArticleService } from "../services/article.service";
+import { AuthRequest } from "../types/express";
 
 const prisma = new PrismaClient();
 
@@ -109,27 +110,34 @@ export class ArticleController {
     this.articleService = new ArticleService();
   }
 
-  async createArticle(req: Request, res: Response, next: NextFunction) {
+  async getArticles(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      const { title, content } = req.body;
-      const userId = req.user?.id;
+      const { page = 1, limit = 10, sort = "latest", keyword = "" } = req.query;
+      const userId = (req as AuthRequest).user?.id;
 
-      if (!userId) {
-        return res.status(401).json({ message: "로그인이 필요합니다." });
-      }
-
-      const article = await this.articleService.createArticle(
-        userId,
-        title,
-        content
+      const result = await this.articleService.getAllArticles(
+        Number(page),
+        Number(limit),
+        sort as string,
+        keyword as string,
+        userId
       );
-      res.status(201).json(article);
+
+      res.json(result);
     } catch (error) {
       next(error);
     }
   }
 
-  async getArticle(req: Request, res: Response, next: NextFunction) {
+  async getArticle(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { id } = req.params;
       const userId = req.user?.id;
@@ -141,21 +149,52 @@ export class ArticleController {
     }
   }
 
-  async updateArticle(req: Request, res: Response, next: NextFunction) {
+  async createArticle(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { title, content } = req.body;
+      const userId = req.user?.id;
+
+      if (!userId) {
+        res.status(401).json({ message: "로그인이 필요합니다." });
+        return;
+      }
+
+      const article = await this.articleService.createArticle(userId, {
+        title,
+        content,
+      });
+      res.status(201).json(article);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateArticle(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { id } = req.params;
       const { title, content } = req.body;
       const userId = req.user?.id;
 
       if (!userId) {
-        return res.status(401).json({ message: "로그인이 필요합니다." });
+        res.status(401).json({ message: "로그인이 필요합니다." });
+        return;
       }
 
       const article = await this.articleService.updateArticle(
         Number(id),
         userId,
-        title,
-        content
+        {
+          title,
+          content,
+        }
       );
       res.json(article);
     } catch (error) {
@@ -163,32 +202,22 @@ export class ArticleController {
     }
   }
 
-  async deleteArticle(req: Request, res: Response, next: NextFunction) {
+  async deleteArticle(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { id } = req.params;
       const userId = req.user?.id;
 
       if (!userId) {
-        return res.status(401).json({ message: "로그인이 필요합니다." });
+        res.status(401).json({ message: "로그인이 필요합니다." });
+        return;
       }
 
       await this.articleService.deleteArticle(Number(id), userId);
       res.status(204).send();
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async getArticles(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { cursor, take } = req.query;
-
-      const articles = await this.articleService.getArticles({
-        cursor: cursor ? Number(cursor) : undefined,
-        take: take ? Number(take) : undefined,
-      });
-
-      res.json(articles);
     } catch (error) {
       next(error);
     }

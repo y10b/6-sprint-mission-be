@@ -14,29 +14,30 @@ const verifyToken = (token: string) => {
       userId: number;
     };
   } catch (error) {
+    console.error("Token verification error:", error);
     return null;
   }
 };
 
 const createAuthMiddleware = (required: boolean): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction) => {
-    // 먼저 쿠키에서 토큰 확인
-    let token = req.cookies.accessToken;
+    console.log("Cookies received:", req.cookies);
+    console.log("Headers received:", req.headers);
 
-    // 쿠키에 없다면 Authorization 헤더 확인
-    if (!token) {
-      const authHeader = req.headers["authorization"];
-      token = authHeader && authHeader.split(" ")[1];
-    }
+    const token = req.cookies.accessToken;
+    console.log("Access token from cookies:", token);
 
     if (!token) {
       if (required) {
+        console.log("No token found in request");
         return next(new UnauthorizedError("로그인이 필요합니다."));
       }
       return next();
     }
 
     const decoded = verifyToken(token);
+    console.log("Decoded token:", decoded);
+
     if (!decoded) {
       if (required) {
         return next(new UnauthorizedError("유효하지 않은 토큰입니다."));
@@ -44,7 +45,13 @@ const createAuthMiddleware = (required: boolean): RequestHandler => {
       return next();
     }
 
+    (req as AuthRequest).user = {
+      id: decoded.userId,
+      email: "",
+      nickname: "",
+    };
     req.userId = decoded.userId;
+
     next();
   };
 };

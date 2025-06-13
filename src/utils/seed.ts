@@ -28,6 +28,7 @@ async function seed() {
     });
 
     // 1. 상품 데이터 시딩
+    console.log("상품 데이터 시딩 시작...");
     while (hasMoreData) {
       const response = await axios.get(
         `https://panda-market-api.vercel.app/products?page=${currentPage}&limit=${pageSize}`
@@ -79,11 +80,58 @@ async function seed() {
         }
       }
 
-      console.log(` Page ${currentPage} 시딩 완료!`);
+      console.log(` 상품 Page ${currentPage} 시딩 완료!`);
       currentPage++;
     }
 
-    console.log(" 모든 데이터 시딩 완료!");
+    // 2. 게시글 데이터 시딩
+    console.log("\n게시글 데이터 시딩 시작...");
+    currentPage = 1;
+    hasMoreData = true;
+
+    while (hasMoreData) {
+      const response = await axios.get(
+        `https://panda-market-api.vercel.app/articles?page=${currentPage}&limit=${pageSize}`
+      );
+      const articles = response.data.list;
+
+      if (articles.length === 0) {
+        hasMoreData = false;
+        break;
+      }
+
+      for (const article of articles) {
+        // 게시글 생성
+        const createdArticle = await prisma.article.create({
+          data: {
+            title: article.title,
+            content: article.content,
+            author: { connect: { id: defaultUser.id } },
+            createdAt: new Date(article.createdAt),
+            updatedAt: new Date(article.updatedAt),
+          },
+        });
+
+        // 좋아요 생성
+        const likeCount = article.likeCount || 0;
+        const likeData = Array.from({ length: likeCount }).map(() => ({
+          userId: defaultUser.id,
+          articleId: createdArticle.id,
+        }));
+
+        if (likeData.length > 0) {
+          await prisma.like.createMany({
+            data: likeData,
+            skipDuplicates: true,
+          });
+        }
+      }
+
+      console.log(` 게시글 Page ${currentPage} 시딩 완료!`);
+      currentPage++;
+    }
+
+    console.log("\n모든 데이터 시딩 완료!");
   } catch (error) {
     console.error(" 시딩 중 오류 발생:", error);
   } finally {

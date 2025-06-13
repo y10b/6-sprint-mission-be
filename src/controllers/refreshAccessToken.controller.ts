@@ -9,8 +9,7 @@ export const refreshAccessToken = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  // 쿠키 또는 요청 본문에서 리프레시 토큰 가져오기
-  const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
+  const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) {
     res.status(401).json({

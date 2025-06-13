@@ -1,4 +1,16 @@
 import { PrismaClient, Article, Prisma } from "@prisma/client";
+import { CreateArticleDto, UpdateArticleDto } from "../types/article.types";
+
+interface ArticleWithAuthor extends Article {
+  author: {
+    id: number;
+    nickname: string;
+  };
+  _count: {
+    likes: number;
+    comments: number;
+  };
+}
 
 export class ArticleRepository {
   private prisma: PrismaClient;
@@ -7,25 +19,51 @@ export class ArticleRepository {
     this.prisma = new PrismaClient();
   }
 
-  async create(data: {
-    title: string;
-    content: string;
-    authorId: number;
-  }): Promise<Article> {
-    return this.prisma.article.create({
-      data,
-      include: {
-        author: {
-          select: {
-            id: true,
-            nickname: true,
+  async findAll(
+    skip: number,
+    take: number,
+    keyword: string,
+    orderBy: Prisma.ArticleOrderByWithRelationInput
+  ): Promise<[number, ArticleWithAuthor[]]> {
+    const where = keyword
+      ? {
+          OR: [
+            {
+              title: { contains: keyword, mode: Prisma.QueryMode.insensitive },
+            },
+            {
+              content: {
+                contains: keyword,
+                mode: Prisma.QueryMode.insensitive,
+              },
+            },
+          ],
+        }
+      : {};
+
+    return Promise.all([
+      this.prisma.article.count({ where }),
+      this.prisma.article.findMany({
+        where,
+        orderBy,
+        skip,
+        take,
+        include: {
+          _count: {
+            select: { likes: true },
+          },
+          author: {
+            select: {
+              id: true,
+              nickname: true,
+            },
           },
         },
-      },
-    });
+      }) as Promise<ArticleWithAuthor[]>,
+    ]);
   }
 
-  async findById(id: number): Promise<Article | null> {
+  async findById(id: number): Promise<ArticleWithAuthor | null> {
     return this.prisma.article.findUnique({
       where: { id },
       include: {
@@ -42,47 +80,18 @@ export class ArticleRepository {
           },
         },
       },
-    });
+    }) as Promise<ArticleWithAuthor | null>;
   }
 
-  async update(
-    id: number,
-    data: { title: string; content: string }
-  ): Promise<Article> {
-    return this.prisma.article.update({
-      where: { id },
-      data,
-      include: {
-        author: {
-          select: {
-            id: true,
-            nickname: true,
-          },
-        },
+  async create(
+    data: CreateArticleDto,
+    authorId: number
+  ): Promise<ArticleWithAuthor> {
+    return this.prisma.article.create({
+      data: {
+        ...data,
+        author: { connect: { id: authorId } },
       },
-    });
-  }
-
-  async delete(id: number): Promise<Article> {
-    return this.prisma.article.delete({
-      where: { id },
-    });
-  }
-
-  async findMany(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.ArticleWhereUniqueInput;
-    where?: Prisma.ArticleWhereInput;
-    orderBy?: Prisma.ArticleOrderByWithRelationInput;
-  }): Promise<Article[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.article.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
       include: {
         author: {
           select: {
@@ -97,22 +106,45 @@ export class ArticleRepository {
           },
         },
       },
-    });
+    }) as Promise<ArticleWithAuthor>;
   }
 
-  async count(where: Prisma.ArticleWhereInput): Promise<number> {
-    return this.prisma.article.count({ where });
-  }
-
-  async findUserLike(userId: number, articleId: number): Promise<boolean> {
-    const like = await this.prisma.like.findUnique({
-      where: {
-        userId_articleId: {
-          userId,
-          articleId,
+  async update(id: number, data: UpdateArticleDto): Promise<ArticleWithAuthor> {
+    return this.prisma.article.update({
+      where: { id },
+      data,
+      include: {
+        author: {
+          select: {
+            id: true,
+            nickname: true,
+          },
+        },
+        _count: {
+          select: {
+            likes: true,
+            comments: true,
+          },
         },
       },
+    }) as Promise<ArticleWithAuthor>;
+  }
+
+  async delete(id: number) {
+    // 트랜잭션으로 관련 데이터 모두 삭제
+    return this.prisma.$transaction([
+      this.prisma.comment.deleteMany({ where: { articleId: id } }),
+      this.prisma.like.deleteMany({ where: { articleId: id } }),
+      this.prisma.article.delete({ where: { id } }),
+    ]);
+  }
+
+  async checkLikeStatus(articleId: number, userId: number) {
+    return this.prisma.like.findFirst({
+      where: {
+        articleId,
+        userId,
+      },
     });
-    return !!like;
   }
 }

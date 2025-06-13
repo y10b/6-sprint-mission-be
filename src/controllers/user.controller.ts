@@ -50,10 +50,16 @@ export const loginUser = async (
 ): Promise<void> => {
   try {
     const { email, encryptedPassword } = req.body;
-    const { accessToken, refreshToken, user } = await userService.login(
-      email,
-      encryptedPassword
-    );
+    const { user } = await userService.login(email, encryptedPassword);
+
+    const accessToken = createAccessToken(user);
+    const refreshToken = createRefreshToken(user);
+
+    // refreshToken을 데이터베이스에 저장
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken },
+    });
 
     // refreshToken을 httpOnly 쿠키로 설정
     res.cookie("refreshToken", refreshToken, {
@@ -71,8 +77,9 @@ export const loginUser = async (
       maxAge: 15 * 60 * 1000, // 15분
     });
 
-    // 응답에는 사용자 정보만 포함
-    res.json({ user });
+    // 응답에는 민감하지 않은 사용자 정보만 포함
+    const { encryptedPassword: _, refreshToken: __, ...safeUserInfo } = user;
+    res.json({ user: safeUserInfo });
   } catch (error) {
     next(error);
   }
