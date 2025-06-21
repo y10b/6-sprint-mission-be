@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  nickname  String   @unique @db.VarChar(20)
+  email     String   @unique
+  password  String // 해시된 비밀번호 저장
+  image     String? // 사용자 이미지 URL, null 가능
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 관계
+  products      Product[] // 이 사용자가 생성한 상품
+  articles      Article[] // 이 사용자가 작성한 게시글
+  comments      Comment[] // 이 사용자가 작성한 댓글
+  likedProducts ProductLike[] // 이 사용자가 좋아요한 상품
+  likedArticles ArticleLike[] // 이 사용자가 좋아요한 게시글
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(30)
+  description String
+  price       Int // `minimum: 0`은 애플리케이션 레벨 유효성 검사
+  tags        String[] // 태그 문자열 배열
+  images      String[] // 이미지 URL 배열. 배열의 `minLength: 1`은 앱 레벨 유효성 검사.
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 사용자와의 관계 (소유자)
+  ownerId Int
+  owner   User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  // 관계
+  comments Comment[] // 이 상품에 대한 댓글
+  likedBy  ProductLike[] // 사용자와의 다대다 관계 (좋아요)를 위한 조인 테이블
+}
+
+model Article {
+  id        Int      @id @default(autoincrement())
+  title     String   @db.VarChar(50)
+  content   String // `minLength: 1`은 애플리케이션 레벨 유효성 검사
+  image     String? // 게시글 이미지 URL, null 가능
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 사용자와의 관계 (작성자)
+  writerId Int
+  writer   User @relation(fields: [writerId], references: [id], onDelete: Cascade)
+
+  // 관계
+  comments Comment[] // 이 게시글에 대한 댓글
+  likedBy  ArticleLike[] // 사용자와의 다대다 관계 (좋아요)를 위한 조인 테이블
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String // `minLength: 1`은 애플리케이션 레벨 유효성 검사
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 사용자와의 관계 (작성자)
+  writerId Int
+  writer   User @relation(fields: [writerId], references: [id], onDelete: Cascade)
+
+  // 상품과의 관계 (선택 사항)
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int?
+
+  // 게시글과의 관계 (선택 사항)
+  article   Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId Int?
+}
+
+// 사용자-상품 좋아요를 위한 조인 테이블 (다대다) (변경)
+model ProductLike {
+  userId    Int
+  productId Int
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([userId, productId]) // 복합 기본 키
+}
+
+// 사용자-게시글 좋아요를 위한 조인 테이블 (다대다)
+model ArticleLike {
+  userId    Int
+  articleId Int
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, articleId]) // 복합 기본 키
+}
