@@ -11,11 +11,11 @@ async function seed() {
   let hasMoreData = true;
 
   try {
-    // 마이그레이션 먼저 실행
+    /*     // 마이그레이션 먼저 실행
     console.log("데이터베이스 마이그레이션 실행 중...");
     execSync("npx prisma migrate deploy", { stdio: "inherit" });
     console.log(" 마이그레이션 완료!");
-
+ */
     // 0. 기본 유저 생성
     const defaultUser = await prisma.user.upsert({
       where: { email: "default@user.com" },
