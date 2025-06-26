@@ -143,4 +143,40 @@ describe("UserService – 회원가입 & 로그인", () => {
       );
     });
   });
+
+  describe("getProfile", () => {
+    it("존재하는 사용자의 프로필을 반환한다", async () => {
+      const storedUser = {
+        id: 5,
+        email: "p@ex.com",
+        nickname: "pro",
+        image: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        encryptedPassword: "hash",
+        refreshToken: null,
+      };
+      prismaMock.user.findUnique.mockResolvedValue(storedUser);
+
+      const result = await service.getProfile(5);
+
+      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+        where: { id: 5 },
+      });
+      expect(result).toEqual({
+        id: 5,
+        email: storedUser.email,
+        nickname: storedUser.nickname,
+        image: storedUser.image,
+        createdAt: storedUser.createdAt,
+        updatedAt: storedUser.updatedAt,
+      });
+    });
+
+    it("존재하지 않는 사용자면 NotFoundError", async () => {
+      prismaMock.user.findUnique.mockResolvedValue(null);
+
+      await expect(service.getProfile(99)).rejects.toThrow();
+    });
+  });
 });

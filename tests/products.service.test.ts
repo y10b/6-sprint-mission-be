@@ -177,5 +177,81 @@ describe("ProductService – CRUD", () => {
       expect(result.list[0].favoriteCount).toBe(2);
       expect(result.list[0].images).toEqual(["img1.jpg"]);
     });
+
+    it("로그인 사용자의 좋아요 상태를 반영한다", async () => {
+      const prod = {
+        id: 2,
+        name: "상품2",
+        description: "desc",
+        price: 2000,
+        tags: [],
+        sellerId: 30,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        _count: { likes: 5 },
+        seller: { nickname: "판매자" },
+        images: [{ url: "url2" }],
+      };
+
+      repo.findAll.mockResolvedValue([1, [prod]]);
+      // checkLikeStatus 반환값으로 truthy
+      repo.checkLikeStatus.mockResolvedValue({});
+
+      const result = await service.getAllProducts(1, 10, "likes", "", 1);
+
+      expect(repo.checkLikeStatus).toHaveBeenCalledWith(2, 1);
+      expect(result.list[0].isLiked).toBe(true);
+    });
+  });
+
+  describe("getProductById", () => {
+    it("상품이 없으면 null을 반환한다", async () => {
+      repo.findById.mockResolvedValue(null);
+
+      const result = await service.getProductById(999);
+
+      expect(result).toBeNull();
+    });
+
+    it("로그인 사용자에게 isLiked 여부를 포함한다", async () => {
+      const prod = {
+        id: 3,
+        name: "P",
+        description: "D",
+        price: 100,
+        tags: [],
+        sellerId: 2,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        _count: { likes: 1 },
+        seller: { nickname: "nick" },
+        images: [{ url: "img" }],
+      };
+      repo.findById.mockResolvedValue(prod);
+      repo.checkLikeStatus.mockResolvedValue({});
+
+      const result = await service.getProductById(3, 1);
+
+      expect(repo.checkLikeStatus).toHaveBeenCalledWith(3, 1);
+      expect(result?.isLiked).toBe(true);
+    });
+  });
+
+  describe("updateProduct & deleteProduct 오류", () => {
+    it("없는 상품 수정 시 오류", async () => {
+      repo.findById.mockResolvedValue(null);
+
+      await expect(service.updateProduct(1, {}, 1)).rejects.toThrow(
+        "Product not found"
+      );
+    });
+
+    it("없는 상품 삭제 시 오류", async () => {
+      repo.findById.mockResolvedValue(null);
+
+      await expect(service.deleteProduct(1, 1)).rejects.toThrow(
+        "Product not found"
+      );
+    });
   });
 });
