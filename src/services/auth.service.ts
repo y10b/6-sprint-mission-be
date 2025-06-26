@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
-import { JwtPayload } from "../types/auth.types";
-import { BadRequestError, NotFoundError } from "../utils/customError";
+import { BadRequestError } from "../utils/customError";
 
 export class AuthService {
   private prisma: PrismaClient;

@@ -10,10 +10,13 @@ import { errorHandler } from "./middlewares/error.middleware";
 import cookieParser from "cookie-parser";
 
 const app = express();
-const PORT = Number(process.env.PORT);
+const PORT = process.env.PORT;
+const corsOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",").map((origin) => origin.trim())
+  : [];
 
 const corsOptions = {
-  origin: ["http://localhost:3000", "http://localhost:5000"],
+  origin: corsOrigins,
   credentials: true,
   methods: ["GET", "POST", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "Cookie"],

@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { UploadResponse } from "../types/upload.types";
 
+// Multer-S3가 추가한 location 필드를 포함한 타입 확장
 interface FileRequest extends Request {
-  file?: Express.Multer.File;
+  file?: Express.Multer.File & { location?: string };
 }
 
 export const uploadImage = async (
@@ -19,7 +20,7 @@ export const uploadImage = async (
     }
 
     // S3 URL
-    const imageUrl = (req.file as any).location as string;
+    const imageUrl = req.file.location as string;
     res.status(200).json({ imageUrl });
     return;
   } catch (error) {

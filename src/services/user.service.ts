@@ -1,6 +1,5 @@
 import { PrismaClient, User } from "@prisma/client";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { BadRequestError, NotFoundError } from "../utils/customError";
 
 interface AuthResponse {

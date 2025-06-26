@@ -1,35 +1,10 @@
 import { ProductRepository } from "../repositories/product.repository";
 import { Prisma } from "@prisma/client";
-
-interface ProductWithDetails {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  tags: string[];
-  sellerId: number;
-  createdAt: Date;
-  updatedAt: Date;
-  favoriteCount: number;
-  sellerNickname: string;
-  isLiked: boolean;
-  images: string[];
-}
-
-interface UpdateProductDto {
-  name?: string;
-  description?: string;
-  price?: number;
-  tags?: string[];
-}
-
-interface CreateProductDto {
-  name: string;
-  description: string;
-  price: number;
-  tags: string[];
-  imageUrls: string[];
-}
+import {
+  CreateProductDto,
+  ProductWithDetails,
+  UpdateProductDto,
+} from "../types/product.types";
 
 export class ProductService {
   private productRepository: ProductRepository;
@@ -113,6 +88,18 @@ export class ProductService {
   }
 
   async createProduct(data: CreateProductDto, userId: number) {
+    if (!data.name || data.name.trim() === "") {
+      throw new Error("상품명은 필수입니다.");
+    }
+
+    if (data.price <= 0) {
+      throw new Error("가격은 0원 이상이어야 합니다.");
+    }
+
+    if (!data.imageUrls || data.imageUrls.length === 0) {
+      throw new Error("이미지가 업로드되지 않았습니다.");
+    }
+
     return this.productRepository.create(data, userId);
   }
 
