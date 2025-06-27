@@ -155,7 +155,7 @@ export class ArticleController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { title, content } = req.body;
+      const { title, content, images } = req.body;
       const userId = req.user?.id;
 
       if (!userId) {
@@ -166,6 +166,7 @@ export class ArticleController {
       const article = await this.articleService.createArticle(userId, {
         title,
         content,
+        images,
       });
       res.status(201).json(article);
     } catch (error) {
@@ -180,7 +181,7 @@ export class ArticleController {
   ): Promise<void> {
     try {
       const { id } = req.params;
-      const { title, content } = req.body;
+      const { title, content, images } = req.body;
       const userId = req.user?.id;
 
       if (!userId) {
@@ -194,6 +195,7 @@ export class ArticleController {
         {
           title,
           content,
+          images,
         }
       );
       res.json(article);

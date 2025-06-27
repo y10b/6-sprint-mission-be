@@ -14,9 +14,11 @@ export interface ArticleListResponse {
 export interface CreateArticleDto {
   title: string;
   content: string;
+  images?: string;
 }
 
 export interface UpdateArticleDto {
   title?: string;
   content?: string;
+  images?: string;
 }
