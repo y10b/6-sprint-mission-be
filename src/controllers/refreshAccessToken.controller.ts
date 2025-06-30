@@ -23,11 +23,11 @@ export const refreshAccessToken = async (
   try {
     const newAccessToken = await authService.refreshAccessToken(refreshToken);
 
-    // 새로운 액세스 토큰을 쿠키에 설정
+    // 새로운 액세스 토큰을 쿠키에 설정 - 크로스 도메인 지원
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: true, // HTTPS에서만 전송
+      sameSite: "none", // 크로스 도메인 허용
       maxAge: 15 * 60 * 1000, // 15분
     });
 

@@ -61,19 +61,19 @@ export const loginUser = async (
       data: { refreshToken },
     });
 
-    // refreshToken을 httpOnly 쿠키로 설정
+    // refreshToken을 httpOnly 쿠키로 설정 - 크로스 도메인 지원
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // 개발환경에서는 false, 프로덕션에서는 true
-      sameSite: "lax", // CSRF 방지
+      secure: true, // HTTPS에서만 전송
+      sameSite: "none", // 크로스 도메인 허용
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7일
     });
 
-    // accessToken도 httpOnly 쿠키로 설정
+    // accessToken도 httpOnly 쿠키로 설정 - 크로스 도메인 지원
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // 개발환경에서는 false, 프로덕션에서는 true
-      sameSite: "lax", // CSRF 방지
+      secure: true, // HTTPS에서만 전송
+      sameSite: "none", // 크로스 도메인 허용
       maxAge: 15 * 60 * 1000, // 15분
     });
 
@@ -124,9 +124,17 @@ export const logoutUser = async (
       data: { refreshToken: null },
     });
 
-    // 쿠키 제거
-    res.clearCookie("refreshToken");
-    res.clearCookie("accessToken");
+    // 쿠키 제거 - 크로스 도메인 설정과 동일하게
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
 
     res.json({ message: "로그아웃되었습니다." });
   } catch (error) {
