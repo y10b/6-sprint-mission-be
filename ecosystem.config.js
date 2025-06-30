@@ -14,9 +14,6 @@ module.exports = {
             NODE_ENV: 'production',
             PORT: 5000
         },
-        // 헬스체크 설정
-        health_check_url: 'http://localhost:5000/health',
-        health_check_grace_period: 3000,
 
         // 로그 설정
         log_file: './logs/combined.log',
@@ -27,6 +24,10 @@ module.exports = {
         // 재시작 정책
         min_uptime: '10s',
         max_restarts: 10,
+        restart_delay: 4000,
+
+        // 에러 발생 시 재시작 대기시간
+        exp_backoff_restart_delay: 100,
 
         // 클러스터 모드 (필요시)
         // instances: 'max',
