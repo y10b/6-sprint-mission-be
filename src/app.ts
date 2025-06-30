@@ -29,6 +29,16 @@ app.use(cookieParser());
 // 정적 파일 서빙 (이미지 접근용)
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
+// 기본 루트 엔드포인트 (간단한 상태 확인)
+app.get("/", (req, res) => {
+  res.json({
+    message: "PandaMarket API Server",
+    status: "running",
+    timestamp: new Date().toISOString(),
+    version: "1.0.0",
+  });
+});
+
 // 라우터 등록
 app.use(router); // 메인 라우터 (api 접두사 포함)
 app.use("/users", userRouter);
@@ -39,3 +49,5 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`서버가 작동 중입니다. ${PORT}`);
 });
+
+export default app;

@@ -153,3 +153,16 @@ Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI
 ### 게시글 좋아요 취소
 DELETE http://localhost:5000/api/articles/1/like
 Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NzY3NiwiZXhwIjoxNzQ5Nzk4NTc2fQ.GBi15AOK1G1wA_RTZZRP-6CYOt3AphjNx2_YEdbzzMk
+
+#################################################
+
+### 헬스 체크
+GET http://localhost:5000/health
+
+### 헬스 체크 상세
+GET http://localhost:5000/health/detailed
+
+### 헬스 체크 DB
+GET http://localhost:5000/health/db
+
+### 헬스 체크 준비성 
