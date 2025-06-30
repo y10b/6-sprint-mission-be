@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
 import os from "os";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export class HealthController {
   // 기본 헬스체크
@@ -74,20 +77,21 @@ export class HealthController {
   // DB 헬스체크 (실제 DB 연결 확인)
   static async databaseHealthCheck(req: Request, res: Response) {
     try {
-      // TODO: 실제 DB 연결 확인 로직 추가
-      // 예시: TypeORM의 경우
-      // import { getConnection } from "typeorm";
-      // const connection = getConnection();
-      // await connection.query('SELECT 1');
+      // 실제 Prisma DB 연결 확인
+      await prisma.$queryRaw`SELECT 1`;
+      const dbInfo =
+        (await prisma.$queryRaw`SELECT current_database(), version()`) as any;
 
-      // 현재는 기본 응답만 제공
       res.status(200).json({
         status: "ok",
         database: {
           status: "connected",
-          type: "mysql", // 또는 실제 DB 타입
-          host: process.env.DB_HOST || "localhost",
-          port: process.env.DB_PORT || 3306,
+          type: "postgresql",
+          database: dbInfo[0]?.current_database || "unknown",
+          version: dbInfo[0]?.version?.split(",")[0] || "unknown",
+          host:
+            process.env.DATABASE_URL?.split("@")[1]?.split(":")[0] || "unknown",
+          port: 5432,
         },
         timestamp: new Date().toISOString(),
       });
