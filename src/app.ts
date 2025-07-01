@@ -13,10 +13,10 @@ const app = express();
 const PORT = process.env.PORT;
 const corsOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(",").map((origin) => origin.trim())
-  : [];
+  : ["https://toieeeeeea.shop", "https://www.toieeeeeea.shop"];
 
 const corsOptions = {
-  origin: corsOrigins,
+  origin: true, // 임시로 모든 origin 허용
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "Cookie"],

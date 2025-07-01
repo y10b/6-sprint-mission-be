@@ -23,11 +23,13 @@ export const refreshAccessToken = async (
   try {
     const newAccessToken = await authService.refreshAccessToken(refreshToken);
 
-    // 새로운 액세스 토큰을 쿠키에 설정 - 크로스 도메인 지원
+    const isProduction = process.env.NODE_ENV === "production";
+
+    // 새로운 액세스 토큰을 쿠키에 설정
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
-      secure: true, // HTTPS에서만 전송
-      sameSite: "none", // 크로스 도메인 허용
+      secure: isProduction,
+      sameSite: isProduction ? ("none" as const) : ("lax" as const),
       maxAge: 15 * 60 * 1000, // 15분
     });
 

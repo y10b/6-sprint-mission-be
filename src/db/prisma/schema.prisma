@@ -29,7 +29,6 @@ model Article {
   authorId  Int
   comments  Comment[]
   likes     Like[]
-  images    String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   author    User      @relation(fields: [authorId], references: [id])

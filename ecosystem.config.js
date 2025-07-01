@@ -8,20 +8,21 @@ module.exports = {
         max_memory_restart: '1G',
         env: {
             NODE_ENV: 'development',
-            PORT: 5000
+            PORT: 5000,
+            DATABASE_URL: 'postgresql://postgres:password@localhost:5432/pandamarket'
         },
         env_production: {
             NODE_ENV: 'production',
             PORT: 5000,
-            DATABASE_URL: process.env.DATABASE_URL,
-            JWT_SECRET: process.env.JWT_SECRET,
-            JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
-            JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
+            DATABASE_URL: 'postgresql://postgres:password@localhost:5432/pandamarket',
+            JWT_SECRET: 'your-jwt-secret-key',
+            JWT_ACCESS_SECRET: 'your-access-secret-key',
+            JWT_REFRESH_SECRET: 'your-refresh-secret-key',
             AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
             AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
             AWS_REGION: process.env.AWS_REGION,
             AWS_S3_BUCKET_NAME: process.env.AWS_S3_BUCKET_NAME,
-            CORS_ORIGINS: process.env.CORS_ORIGINS
+            CORS_ORIGINS: 'https://toieeeeeea.shop,https://www.toieeeeeea.shop,https://6-sprint-mission-fe-seven.vercel.app,https://6-sprint-mission-fe-y10bs-projects.vercel.app'
         },
 
         // 로그 설정

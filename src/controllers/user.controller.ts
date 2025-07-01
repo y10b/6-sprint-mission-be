@@ -61,19 +61,22 @@ export const loginUser = async (
       data: { refreshToken },
     });
 
-    // refreshToken을 httpOnly 쿠키로 설정 - 크로스 도메인 지원
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true, // HTTPS에서만 전송
-      sameSite: "none", // 크로스 도메인 허용
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7일
-    });
+    const isProduction = process.env.NODE_ENV === "production";
 
-    // accessToken도 httpOnly 쿠키로 설정 - 크로스 도메인 지원
-    res.cookie("accessToken", accessToken, {
+    // 쿠키 설정을 환경에 따라 조정
+    const cookieOptions = {
       httpOnly: true,
-      secure: true, // HTTPS에서만 전송
-      sameSite: "none", // 크로스 도메인 허용
+      secure: isProduction,
+      sameSite: isProduction ? ("none" as const) : ("lax" as const),
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7일
+    };
+
+    // refreshToken을 httpOnly 쿠키로 설정
+    res.cookie("refreshToken", refreshToken, cookieOptions);
+
+    // accessToken도 httpOnly 쿠키로 설정
+    res.cookie("accessToken", accessToken, {
+      ...cookieOptions,
       maxAge: 15 * 60 * 1000, // 15분
     });
 
@@ -124,17 +127,18 @@ export const logoutUser = async (
       data: { refreshToken: null },
     });
 
-    // 쿠키 제거 - 크로스 도메인 설정과 동일하게
-    res.clearCookie("refreshToken", {
+    const isProduction = process.env.NODE_ENV === "production";
+
+    // 쿠키 삭제 설정을 로그인 시와 동일하게 맞춤
+    const cookieOptions = {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
+      secure: isProduction,
+      sameSite: isProduction ? ("none" as const) : ("lax" as const),
+    };
+
+    // 쿠키 제거
+    res.clearCookie("refreshToken", cookieOptions);
+    res.clearCookie("accessToken", cookieOptions);
 
     res.json({ message: "로그아웃되었습니다." });
   } catch (error) {
