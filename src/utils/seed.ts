@@ -106,7 +106,6 @@ async function seed() {
           data: {
             title: article.title,
             content: article.content,
-            images: article.image || null,
             author: { connect: { id: defaultUser.id } },
             createdAt: new Date(article.createdAt),
             updatedAt: new Date(article.updatedAt),
