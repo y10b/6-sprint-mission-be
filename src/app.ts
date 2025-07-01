@@ -16,11 +16,24 @@ const corsOrigins = process.env.CORS_ORIGINS
   : ["https://toieeeeeea.shop", "https://www.toieeeeeea.shop"];
 
 const corsOptions = {
-  origin: true, // 임시로 모든 origin 허용
+  origin: corsOrigins, // 환경변수에서 읽은 origins 사용
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "Cookie",
+    "X-Requested-With",
+    "Accept",
+    "Origin",
+  ],
+  exposedHeaders: ["Set-Cookie"],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
 };
+
+console.log("🌍 [CORS] 허용된 origins:", corsOrigins);
+console.log("🍪 [CORS] Credentials 허용:", corsOptions.credentials);
 
 app.use(cors(corsOptions));
 app.use(express.json());

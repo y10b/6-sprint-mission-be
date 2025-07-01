@@ -23,18 +23,13 @@ export const refreshAccessToken = async (
   try {
     const newAccessToken = await authService.refreshAccessToken(refreshToken);
 
-    const isProduction = process.env.NODE_ENV === "production";
-
-    // 다른 컨트롤러와 일관된 쿠키 설정
-    const cookieOptions = {
+    // 새로운 액세스 토큰을 쿠키에 설정 - CloudFront HTTPS 지원
+    res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? ("none" as const) : ("lax" as const),
+      secure: process.env.NODE_ENV === "production", // 프로덕션에서만 HTTPS 필요
+      sameSite: "none", // 크로스 도메인 허용
       maxAge: 15 * 60 * 1000, // 15분
-    };
-
-    // 새로운 액세스 토큰을 쿠키에 설정
-    res.cookie("accessToken", newAccessToken, cookieOptions);
+    });
 
     res.json({
       success: true,
