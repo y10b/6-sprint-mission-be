@@ -32,8 +32,6 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-console.log("🌍 [CORS] 허용된 origins:", corsOrigins);
-console.log("🍪 [CORS] Credentials 허용:", corsOptions.credentials);
 
 app.use(cors(corsOptions));
 app.use(express.json());
