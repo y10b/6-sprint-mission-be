@@ -67,6 +67,9 @@ export const loginUser = async (
       secure: process.env.NODE_ENV === "production", // 프로덕션에서만 HTTPS 필요
       sameSite: "none", // 크로스 도메인 허용
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7일
+      ...(process.env.NODE_ENV === "production" && {
+        domain: ".toieeeeeea.shop",
+      }),
     });
 
     // accessToken도 httpOnly 쿠키로 설정 - CloudFront HTTPS 지원
@@ -75,6 +78,9 @@ export const loginUser = async (
       secure: process.env.NODE_ENV === "production", // 프로덕션에서만 HTTPS 필요
       sameSite: "none", // 크로스 도메인 허용
       maxAge: 15 * 60 * 1000, // 15분
+      ...(process.env.NODE_ENV === "production" && {
+        domain: ".toieeeeeea.shop",
+      }),
     });
 
     // 응답에는 민감하지 않은 사용자 정보만 포함
@@ -129,11 +135,17 @@ export const logoutUser = async (
       httpOnly: true,
       secure: true,
       sameSite: "none",
+      ...(process.env.NODE_ENV === "production" && {
+        domain: ".toieeeeeea.shop",
+      }),
     });
     res.clearCookie("accessToken", {
       httpOnly: true,
       secure: true,
       sameSite: "none",
+      ...(process.env.NODE_ENV === "production" && {
+        domain: ".toieeeeeea.shop",
+      }),
     });
 
     res.json({ message: "로그아웃되었습니다." });

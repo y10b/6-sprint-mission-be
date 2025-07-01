@@ -29,6 +29,9 @@ export const refreshAccessToken = async (
       secure: process.env.NODE_ENV === "production", // 프로덕션에서만 HTTPS 필요
       sameSite: "none", // 크로스 도메인 허용
       maxAge: 15 * 60 * 1000, // 15분
+      ...(process.env.NODE_ENV === "production" && {
+        domain: ".toieeeeeea.shop",
+      }),
     });
 
     res.json({
