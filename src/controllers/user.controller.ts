@@ -63,16 +63,18 @@ export const loginUser = async (
 
     const isProduction = process.env.NODE_ENV === "production";
 
-    // 쿠키 설정을 환경에 따라 조정
+    // 환경에 따른 쿠키 설정
     const cookieOptions = {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? ("none" as const) : ("lax" as const),
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7일
     };
 
     // refreshToken을 httpOnly 쿠키로 설정
-    res.cookie("refreshToken", refreshToken, cookieOptions);
+    res.cookie("refreshToken", refreshToken, {
+      ...cookieOptions,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7일
+    });
 
     // accessToken도 httpOnly 쿠키로 설정
     res.cookie("accessToken", accessToken, {
@@ -129,7 +131,7 @@ export const logoutUser = async (
 
     const isProduction = process.env.NODE_ENV === "production";
 
-    // 쿠키 삭제 설정을 로그인 시와 동일하게 맞춤
+    // 로그인 시와 동일한 쿠키 설정 사용
     const cookieOptions = {
       httpOnly: true,
       secure: isProduction,

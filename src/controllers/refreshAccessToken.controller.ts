@@ -25,13 +25,16 @@ export const refreshAccessToken = async (
 
     const isProduction = process.env.NODE_ENV === "production";
 
-    // 새로운 액세스 토큰을 쿠키에 설정
-    res.cookie("accessToken", newAccessToken, {
+    // 다른 컨트롤러와 일관된 쿠키 설정
+    const cookieOptions = {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? ("none" as const) : ("lax" as const),
       maxAge: 15 * 60 * 1000, // 15분
-    });
+    };
+
+    // 새로운 액세스 토큰을 쿠키에 설정
+    res.cookie("accessToken", newAccessToken, cookieOptions);
 
     res.json({
       success: true,
