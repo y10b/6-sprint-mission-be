@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from "express";
-import bcrypt from "bcrypt";
+
 import jwt from "jsonwebtoken";
 import { PrismaClient, User } from "@prisma/client";
-import { BadRequestError, ConflictError } from "../utils/customError";
+
 import { UserService } from "../services/user.service";
 
 const prisma = new PrismaClient();
 
-const ACCESS_SECRET = process.env.JWT_SECRET || "your-secret-key";
-const REFRESH_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const ACCESS_SECRET = process.env.JWT_SECRET || "";
+const REFRESH_SECRET = process.env.JWT_SECRET || "";
 
 const createAccessToken = (user: User): string =>
   jwt.sign({ userId: user.id }, ACCESS_SECRET, { expiresIn: "15m" });
