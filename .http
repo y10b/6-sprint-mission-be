@@ -1,0 +1,168 @@
+### 회원가입
+POST http://localhost:5000/users/register
+Content-Type: application/json
+
+{
+  "email": "default2@user.com",
+  "encryptedPassword": "dummy-password!",
+  "nickname":"ga"
+}
+### 로그인
+POST http://localhost:5000/users/login
+Content-Type: application/json
+
+{
+  "email": "default2@user.com",
+  "encryptedPassword": "dummy-password!"
+}
+
+### 리프레시 토큰
+POST http://localhost:5000/users/refresh
+Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTc0OTYyMjMyNywiZXhwIjoxNzUwMjI3MTI3fQ.F0E6MEKvKKyroSO29jgtxBjTi7E0Bz3ayHEcFVRpw4k
+
+### 로그아웃 
+POST http://localhost:5000/users/logout
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
+
+### 전체 products 가져오기
+GET http://localhost:5000/api/products/1
+
+### products test(post patch)
+PATCH   http://localhost:5000/api/products/315
+Content-Type: application/json
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
+
+{
+  "name": "수정한1 예쁜 인형",
+  "description": "수정한 예쁜 인형 설명",
+  "price": 1000000,
+  "tags": ["전자기기", "노트북", "바나나"],
+  "imageUrls":[
+    "/uploads/1747118042578-670427632.jpg",
+    "/uploads/1747118042578-670427634.jpg"
+  ]
+}
+
+### 상품 생성
+POST http://localhost:5000/api/products
+Content-Type: application/json
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
+
+{
+    "name": "맥북 프로 M3",
+    "description": "2024년 새로 구매한 맥북 프로 M3 판매합니다. 상태 최상입니다.",
+    "price": 2000000,
+    "tags": ["전자기기", "노트북", "애플"],
+    "imageUrls": [
+        "/uploads/1747118042578-670427633.jpg",
+        "/uploads/1747124502848-45436661.jpg"
+    ]
+}
+
+### products 삭제
+DELETE http://localhost:5000/api/products/315
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
+
+################################################################################
+### 게시글 목록 조회
+GET http://localhost:5000/api/articles
+
+###게시글 상세 조회
+GET http://localhost:5000/api/articles/1
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
+
+###게시글 생성
+POST http://localhost:5000/api/articles
+Content-Type: application/json
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
+
+{
+  "title": "새로운 게시글",
+  "content": "새로운 게시글 내용입니다."
+}
+
+###게시글 수정
+PATCH http://localhost:5000/api/articles/333
+Content-Type: application/json
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
+
+{
+  "title": "수정된 게시글",
+  "content": "수정된 게시글 내용입니다."
+}
+
+###게시글 삭제
+DELETE http://localhost:5000/api/articles/333
+Content-Type: application/json
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
+
+################################################################################
+
+### 상품 댓글 요청
+POST http://localhost:5000/api/products/1/comments
+Content-Type: application/json
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
+
+{
+  "content": "이 상품 정말 마음에 들어요!"
+}
+
+### 상품 댓글 조회
+GET http://localhost:5000/api/products/1/comments
+
+### 게시글 댓글 요청
+POST http://localhost:5000/api/articles/1/comments
+Content-Type: application/json
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
+
+{
+  "content": "이 게시글 정말 마음에 들어요!"
+}
+
+### 게시글 댓글 조회
+GET http://localhost:5000/api/articles/1/comments
+
+### 댓글 수정
+PATCH http://localhost:5000/api/comments/3
+Content-Type: application/json
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
+
+{
+  "content": "수정된 댓글 내용입니다."
+}
+
+### 댓글 삭제
+DELETE http://localhost:5000/api/comments/3
+Content-Type: application/json
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NTY5MCwiZXhwIjoxNzQ5Nzk2NTkwfQ.FIyVJXyyKrtrx7UR565r62-VePZGjfNflh8492Esc8o
+
+################################################################################
+
+### 상품 좋아요
+POST http://localhost:5000/api/products/1/like 
+Cookie:accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NzY3NiwiZXhwIjoxNzQ5Nzk4NTc2fQ.GBi15AOK1G1wA_RTZZRP-6CYOt3AphjNx2_YEdbzzMk
+
+### 상품 좋아요 취소
+DELETE  http://localhost:5000/api/products/1/like 
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NzY3NiwiZXhwIjoxNzQ5Nzk4NTc2fQ.GBi15AOK1G1wA_RTZZRP-6CYOt3AphjNx2_YEdbzzMk
+
+### 게시글 좋아요
+POST http://localhost:5000/api/articles/1/like
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NzY3NiwiZXhwIjoxNzQ5Nzk4NTc2fQ.GBi15AOK1G1wA_RTZZRP-6CYOt3AphjNx2_YEdbzzMk
+
+### 게시글 좋아요 취소
+DELETE http://localhost:5000/api/articles/1/like
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTc5NzY3NiwiZXhwIjoxNzQ5Nzk4NTc2fQ.GBi15AOK1G1wA_RTZZRP-6CYOt3AphjNx2_YEdbzzMk
+
+#################################################
+
+### 헬스 체크
+GET http://localhost:5000/health
+
+### 헬스 체크 상세
+GET http://localhost:5000/health/detailed
+
+### 헬스 체크 DB
+GET http://localhost:5000/health/db
+
+### 헬스 체크 준비성 
