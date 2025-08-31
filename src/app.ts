@@ -13,7 +13,20 @@ const app = express();
 const PORT = process.env.PORT;
 const corsOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(",").map((origin) => origin.trim())
-  : ["https://toieeeeeea.shop", "https://www.toieeeeeea.shop"];
+  : process.env.NODE_ENV === "production"
+  ? [
+      "https://toieeeeeea.shop",
+      "https://www.toieeeeeea.shop",
+      "https://6-sprint-mission-fe-seven.vercel.app",
+      "https://6-sprint-mission-fe-y10bs-projects.vercel.app",
+      "https://pandamarket-frontend.vercel.app", // 추가 예상 도메인
+    ]
+  : [
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      "https://toieeeeeea.shop",
+      "https://www.toieeeeeea.shop",
+    ];
 
 const corsOptions = {
   origin: corsOrigins, // 환경변수에서 읽은 origins 사용

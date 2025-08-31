@@ -61,26 +61,25 @@ export const loginUser = async (
       data: { refreshToken },
     });
 
-    // refreshToken을 httpOnly 쿠키로 설정 - CloudFront HTTPS 지원
-    res.cookie("refreshToken", refreshToken, {
+    // 개발/프로덕션 환경에 따른 쿠키 설정
+    const cookieOptions = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // 프로덕션에서만 HTTPS 필요
-      sameSite: "none", // 크로스 도메인 허용
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      // 프로덕션에서는 도메인을 명시적으로 설정하지 않아 모든 서브도메인에서 작동하도록 함
+      // domain 설정을 제거하여 쿠키가 설정된 정확한 도메인에서만 작동하도록 변경
+    } as const;
+
+    // refreshToken을 httpOnly 쿠키로 설정
+    res.cookie("refreshToken", refreshToken, {
+      ...cookieOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7일
-      ...(process.env.NODE_ENV === "production" && {
-        domain: ".toieeeeeea.shop",
-      }),
     });
 
-    // accessToken도 httpOnly 쿠키로 설정 - CloudFront HTTPS 지원
+    // accessToken도 httpOnly 쿠키로 설정
     res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // 프로덕션에서만 HTTPS 필요
-      sameSite: "none", // 크로스 도메인 허용
+      ...cookieOptions,
       maxAge: 15 * 60 * 1000, // 15분
-      ...(process.env.NODE_ENV === "production" && {
-        domain: ".toieeeeeea.shop",
-      }),
     });
 
     // 응답에는 민감하지 않은 사용자 정보만 포함
