@@ -1,13 +1,11 @@
-import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
+import { prisma } from "../db/prisma";
 import { BadRequestError } from "../utils/customError";
 
 export class AuthService {
-  private prisma: PrismaClient;
   private readonly jwtSecret: string;
 
   constructor() {
-    this.prisma = new PrismaClient();
     this.jwtSecret = process.env.JWT_SECRET || "your-secret-key";
   }
 
@@ -17,7 +15,7 @@ export class AuthService {
         userId: number;
       };
 
-      const user = await this.prisma.user.findUnique({
+      const user = await prisma.user.findUnique({
         where: { id: payload.userId },
       });
 

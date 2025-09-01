@@ -1,11 +1,11 @@
-import { UploadConfig } from "../types/upload.types";
+import { IUploadConfig } from "../types/upload.types";
 import { BadRequestError } from "../utils/customError";
 import { Request } from "express";
 import path from "path";
 import fs from "fs";
 
 export class UploadService {
-  public readonly config: UploadConfig;
+  public readonly config: IUploadConfig;
 
   constructor() {
     this.config = {

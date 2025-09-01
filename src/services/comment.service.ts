@@ -1,19 +1,14 @@
-import { PrismaClient, Comment } from "@prisma/client";
+import { Comment } from "@prisma/client";
+import { prisma } from "../db/prisma";
 import { NotFoundError, ForbiddenError } from "../utils/customError";
 
 export class CommentService {
-  private prisma: PrismaClient;
-
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
-
   async createArticleComment(
     articleId: number,
     userId: number,
     content: string
   ): Promise<Comment> {
-    const article = await this.prisma.article.findUnique({
+    const article = await prisma.article.findUnique({
       where: { id: articleId },
     });
 
@@ -21,7 +16,7 @@ export class CommentService {
       throw new NotFoundError("게시글을 찾을 수 없습니다.");
     }
 
-    return this.prisma.comment.create({
+    return prisma.comment.create({
       data: {
         content,
         articleId,
@@ -43,7 +38,7 @@ export class CommentService {
     userId: number,
     content: string
   ): Promise<Comment> {
-    const product = await this.prisma.product.findUnique({
+    const product = await prisma.product.findUnique({
       where: { id: productId },
     });
 
@@ -51,7 +46,7 @@ export class CommentService {
       throw new NotFoundError("상품을 찾을 수 없습니다.");
     }
 
-    return this.prisma.comment.create({
+    return prisma.comment.create({
       data: {
         content,
         productId,
@@ -73,7 +68,7 @@ export class CommentService {
     userId: number,
     content: string
   ): Promise<Comment> {
-    const comment = await this.prisma.comment.findUnique({
+    const comment = await prisma.comment.findUnique({
       where: { id: commentId },
     });
 
@@ -85,7 +80,7 @@ export class CommentService {
       throw new ForbiddenError("자신의 댓글만 수정할 수 있습니다.");
     }
 
-    return this.prisma.comment.update({
+    return prisma.comment.update({
       where: { id: commentId },
       data: { content },
       include: {
@@ -100,7 +95,7 @@ export class CommentService {
   }
 
   async deleteComment(commentId: number, userId: number): Promise<void> {
-    const comment = await this.prisma.comment.findUnique({
+    const comment = await prisma.comment.findUnique({
       where: { id: commentId },
     });
 
@@ -112,13 +107,13 @@ export class CommentService {
       throw new ForbiddenError("자신의 댓글만 삭제할 수 있습니다.");
     }
 
-    await this.prisma.comment.delete({
+    await prisma.comment.delete({
       where: { id: commentId },
     });
   }
 
   async getCommentsForProduct(productId: number): Promise<Comment[]> {
-    return this.prisma.comment.findMany({
+    return prisma.comment.findMany({
       where: { productId },
       include: {
         user: {
@@ -135,7 +130,7 @@ export class CommentService {
   }
 
   async getCommentsForArticle(articleId: number): Promise<Comment[]> {
-    return this.prisma.comment.findMany({
+    return prisma.comment.findMany({
       where: { articleId },
       include: {
         user: {

@@ -1,17 +1,12 @@
-import { PrismaClient, Like, Prisma } from "@prisma/client";
+import { Like, Prisma } from "@prisma/client";
+import { prisma } from "../db/prisma";
 
-export class LikeRepository {
-  private prisma: PrismaClient;
-
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
-
-  async findProductLike(
+export class FavoriteRepository {
+  async findProductFavorite(
     userId: number,
     productId: number
   ): Promise<Like | null> {
-    return this.prisma.like.findUnique({
+    return prisma.like.findUnique({
       where: {
         userId_productId: {
           userId,
@@ -21,11 +16,11 @@ export class LikeRepository {
     });
   }
 
-  async findArticleLike(
+  async findArticleFavorite(
     userId: number,
     articleId: number
   ): Promise<Like | null> {
-    return this.prisma.like.findUnique({
+    return prisma.like.findUnique({
       where: {
         userId_articleId: {
           userId,
@@ -36,25 +31,25 @@ export class LikeRepository {
   }
 
   async create(data: Prisma.LikeCreateInput): Promise<Like> {
-    return this.prisma.like.create({
+    return prisma.like.create({
       data,
     });
   }
 
   async delete(id: number): Promise<Like> {
-    return this.prisma.like.delete({
+    return prisma.like.delete({
       where: { id },
     });
   }
 
-  async countProductLikes(productId: number): Promise<number> {
-    return this.prisma.like.count({
+  async countProductFavorites(productId: number): Promise<number> {
+    return prisma.like.count({
       where: { productId },
     });
   }
 
-  async countArticleLikes(articleId: number): Promise<number> {
-    return this.prisma.like.count({
+  async countArticleFavorites(articleId: number): Promise<number> {
+    return prisma.like.count({
       where: { articleId },
     });
   }
@@ -62,6 +57,6 @@ export class LikeRepository {
   async transaction<T>(
     callback: (tx: Prisma.TransactionClient) => Promise<T>
   ): Promise<T> {
-    return this.prisma.$transaction(callback);
+    return prisma.$transaction(callback);
   }
 }

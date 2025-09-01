@@ -5,6 +5,7 @@ import cors from "cors";
 import path from "path";
 import router from "./routes/index.route";
 import userRouter from "./routes/user.route";
+import { disconnectPrisma } from "./db/prisma";
 
 import { errorHandler } from "./middlewares/error.middleware";
 import cookieParser from "cookie-parser";
@@ -45,9 +46,6 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-console.log("🌍 [CORS] 허용된 origins:", corsOrigins);
-console.log("🍪 [CORS] Credentials 허용:", corsOptions.credentials);
-
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
@@ -72,8 +70,24 @@ app.use("/users", userRouter);
 // 에러 핸들러
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`서버가 작동 중입니다. ${PORT}`);
+  // 서버 시작됨
+});
+
+// Graceful shutdown
+process.on("SIGTERM", async () => {
+  server.close(async () => {
+    await disconnectPrisma();
+    process.exit(0);
+  });
+});
+
+process.on("SIGINT", async () => {
+  server.close(async () => {
+    await disconnectPrisma();
+    process.exit(0);
+  });
 });
 
 export default app;

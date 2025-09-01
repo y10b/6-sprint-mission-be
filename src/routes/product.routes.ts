@@ -6,9 +6,9 @@ import {
   getCommentsForProduct,
 } from "../controllers/comment.controller";
 import {
-  toggleLikeForProduct,
-  removeLikeForProduct,
-} from "../controllers/like.controller";
+  toggleFavoriteForProduct,
+  removeFavoriteForProduct,
+} from "../controllers/favorite.controller";
 
 const router = Router();
 
@@ -46,9 +46,17 @@ router.post("/:productId/comments", authenticateToken, createCommentForProduct);
 router.get("/:productId/comments", getCommentsForProduct);
 
 // 상품 좋아요 토글
-router.post("/:productId/like", authenticateToken, toggleLikeForProduct);
+router.post(
+  "/:productId/favorite",
+  authenticateToken,
+  toggleFavoriteForProduct
+);
 
 // 상품 좋아요 삭제
-router.delete("/:productId/like", authenticateToken, removeLikeForProduct);
+router.delete(
+  "/:productId/favorite",
+  authenticateToken,
+  removeFavoriteForProduct
+);
 
 export default router;

@@ -1,41 +1,48 @@
 import { Request, Response, NextFunction } from "express";
-
 import jwt from "jsonwebtoken";
-import { PrismaClient, User } from "@prisma/client";
-
+import { User } from "@prisma/client";
 import { UserService } from "../services/user.service";
+import {
+  TRegisterUserBody,
+  TLoginUserBody,
+  TAccessToken,
+  TRefreshToken,
+  TCookieOptions,
+} from "../types/express.d";
 
-const prisma = new PrismaClient();
-
+/**
+ * JWT 토큰 생성 유틸리티
+ */
 const ACCESS_SECRET = process.env.JWT_SECRET || "";
 const REFRESH_SECRET = process.env.JWT_SECRET || "";
 
-const createAccessToken = (user: User): string =>
+const createAccessToken = (user: User): TAccessToken =>
   jwt.sign({ userId: user.id }, ACCESS_SECRET, { expiresIn: "15m" });
 
-const createRefreshToken = (user: User): string =>
+const createRefreshToken = (user: User): TRefreshToken =>
   jwt.sign({ userId: user.id }, REFRESH_SECRET, { expiresIn: "7d" });
 
-interface RegisterUserBody {
-  email: string;
-  encryptedPassword: string;
-  nickname: string;
-}
-
-interface LoginUserBody {
-  email: string;
-  encryptedPassword: string;
-}
+/**
+ * 쿠키 옵션 생성 유틸리티
+ */
+const getCookieOptions = (): TCookieOptions => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+});
 
 const userService = new UserService();
 
+/**
+ * 사용자 등록 컨트롤러
+ */
 export const registerUser = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { email, encryptedPassword, nickname } = req.body;
+    const { email, encryptedPassword, nickname }: TRegisterUserBody = req.body;
     const user = await userService.register(email, encryptedPassword, nickname);
     res.status(201).json(user);
   } catch (error) {
@@ -49,26 +56,17 @@ export const loginUser = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { email, encryptedPassword } = req.body;
+    const { email, encryptedPassword }: TLoginUserBody = req.body;
     const { user } = await userService.login(email, encryptedPassword);
 
     const accessToken = createAccessToken(user);
     const refreshToken = createRefreshToken(user);
 
-    // refreshToken을 데이터베이스에 저장
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { refreshToken },
-    });
+    // refreshToken을 데이터베이스에 저장 (서비스 계층을 통해)
+    await userService.updateRefreshToken(user.id, refreshToken);
 
-    // 개발/프로덕션 환경에 따른 쿠키 설정
-    const cookieOptions = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      // 프로덕션에서는 도메인을 명시적으로 설정하지 않아 모든 서브도메인에서 작동하도록 함
-      // domain 설정을 제거하여 쿠키가 설정된 정확한 도메인에서만 작동하도록 변경
-    } as const;
+    // 쿠키 옵션 설정
+    const cookieOptions = getCookieOptions();
 
     // refreshToken을 httpOnly 쿠키로 설정
     res.cookie("refreshToken", refreshToken, {
@@ -123,29 +121,22 @@ export const logoutUser = async (
       return;
     }
 
-    // 데이터베이스에서 refreshToken 제거
-    await prisma.user.update({
-      where: { id: userId },
-      data: { refreshToken: null },
-    });
+    // 데이터베이스에서 refreshToken 제거 (서비스 계층을 통해)
+    await userService.updateRefreshToken(userId, null);
 
-    // 쿠키 제거 - 크로스 도메인 설정과 동일하게
-    res.clearCookie("refreshToken", {
+    // 쿠키 제거 옵션 설정
+    const clearCookieOptions = {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "none" as const,
       ...(process.env.NODE_ENV === "production" && {
         domain: ".toieeeeeea.shop",
       }),
-    });
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      ...(process.env.NODE_ENV === "production" && {
-        domain: ".toieeeeeea.shop",
-      }),
-    });
+    };
+
+    // 쿠키 제거
+    res.clearCookie("refreshToken", clearCookieOptions);
+    res.clearCookie("accessToken", clearCookieOptions);
 
     res.json({ message: "로그아웃되었습니다." });
   } catch (error) {

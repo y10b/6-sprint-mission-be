@@ -1,9 +1,9 @@
 import { ProductRepository } from "../repositories/product.repository";
 import { Prisma } from "@prisma/client";
 import {
-  CreateProductDto,
-  ProductWithDetails,
-  UpdateProductDto,
+  TCreateProductDto,
+  IProductWithDetails,
+  TUpdateProductDto,
 } from "../types/product.types";
 
 export class ProductService {
@@ -65,7 +65,7 @@ export class ProductService {
   async getProductById(
     id: number,
     userId?: number
-  ): Promise<ProductWithDetails | null> {
+  ): Promise<IProductWithDetails | null> {
     const product = await this.productRepository.findById(id);
 
     if (!product) {
@@ -87,7 +87,7 @@ export class ProductService {
     };
   }
 
-  async createProduct(data: CreateProductDto, userId: number) {
+  async createProduct(data: TCreateProductDto, userId: number) {
     if (!data.name || data.name.trim() === "") {
       throw new Error("상품명은 필수입니다.");
     }
@@ -103,7 +103,7 @@ export class ProductService {
     return this.productRepository.create(data, userId);
   }
 
-  async updateProduct(id: number, data: UpdateProductDto, userId: number) {
+  async updateProduct(id: number, data: TUpdateProductDto, userId: number) {
     const product = await this.productRepository.findById(id);
 
     if (!product) {

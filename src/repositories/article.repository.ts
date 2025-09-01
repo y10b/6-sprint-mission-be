@@ -1,5 +1,6 @@
-import { PrismaClient, Article, Prisma } from "@prisma/client";
-import { CreateArticleDto, UpdateArticleDto } from "../types/article.types";
+import { Article, Prisma } from "@prisma/client";
+import { prisma } from "../db/prisma";
+import { TCreateArticleDto, TUpdateArticleDto } from "../types/article.types";
 
 interface ArticleWithAuthor extends Article {
   author: {
@@ -13,12 +14,6 @@ interface ArticleWithAuthor extends Article {
 }
 
 export class ArticleRepository {
-  private prisma: PrismaClient;
-
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
-
   async findAll(
     skip: number,
     take: number,
@@ -42,8 +37,8 @@ export class ArticleRepository {
       : {};
 
     return Promise.all([
-      this.prisma.article.count({ where }),
-      this.prisma.article.findMany({
+      prisma.article.count({ where }),
+      prisma.article.findMany({
         where,
         orderBy,
         skip,
@@ -64,7 +59,7 @@ export class ArticleRepository {
   }
 
   async findById(id: number): Promise<ArticleWithAuthor | null> {
-    return this.prisma.article.findUnique({
+    return prisma.article.findUnique({
       where: { id },
       include: {
         author: {
@@ -84,10 +79,10 @@ export class ArticleRepository {
   }
 
   async create(
-    data: CreateArticleDto,
+    data: TCreateArticleDto,
     authorId: number
   ): Promise<ArticleWithAuthor> {
-    return this.prisma.article.create({
+    return prisma.article.create({
       data: {
         ...data,
         author: { connect: { id: authorId } },
@@ -109,8 +104,11 @@ export class ArticleRepository {
     }) as Promise<ArticleWithAuthor>;
   }
 
-  async update(id: number, data: UpdateArticleDto): Promise<ArticleWithAuthor> {
-    return this.prisma.article.update({
+  async update(
+    id: number,
+    data: TUpdateArticleDto
+  ): Promise<ArticleWithAuthor> {
+    return prisma.article.update({
       where: { id },
       data,
       include: {
@@ -132,15 +130,15 @@ export class ArticleRepository {
 
   async delete(id: number) {
     // 트랜잭션으로 관련 데이터 모두 삭제
-    return this.prisma.$transaction([
-      this.prisma.comment.deleteMany({ where: { articleId: id } }),
-      this.prisma.like.deleteMany({ where: { articleId: id } }),
-      this.prisma.article.delete({ where: { id } }),
+    return prisma.$transaction([
+      prisma.comment.deleteMany({ where: { articleId: id } }),
+      prisma.like.deleteMany({ where: { articleId: id } }),
+      prisma.article.delete({ where: { id } }),
     ]);
   }
 
   async checkLikeStatus(articleId: number, userId: number) {
-    return this.prisma.like.findFirst({
+    return prisma.like.findFirst({
       where: {
         articleId,
         userId,
