@@ -2,9 +2,9 @@ import { Router } from "express";
 import { ArticleController } from "../controllers/article.controller";
 import { authenticateToken } from "../middlewares/auth";
 import {
-  toggleLikeForArticle,
-  removeLikeForArticle,
-} from "../controllers/like.controller";
+  toggleFavoriteForArticle,
+  removeFavoriteForArticle,
+} from "../controllers/favorite.controller";
 import {
   createCommentForArticle,
   getCommentsForArticle,
@@ -45,10 +45,18 @@ router.delete(
 );
 
 // 게시글 좋아요 토글
-router.post("/:articleId/like", authenticateToken, toggleLikeForArticle);
+router.post(
+  "/:articleId/favorite",
+  authenticateToken,
+  toggleFavoriteForArticle
+);
 
 // 게시글 좋아요 취소
-router.delete("/:articleId/like", authenticateToken, removeLikeForArticle);
+router.delete(
+  "/:articleId/favorite",
+  authenticateToken,
+  removeFavoriteForArticle
+);
 
 // 게시글 댓글 작성
 router.post("/:articleId/comments", authenticateToken, createCommentForArticle);

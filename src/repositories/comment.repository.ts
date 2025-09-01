@@ -1,14 +1,9 @@
-import { PrismaClient, Comment, Prisma } from "@prisma/client";
+import { Comment, Prisma } from "@prisma/client";
+import { prisma } from "../db/prisma";
 
 export class CommentRepository {
-  private prisma: PrismaClient;
-
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
-
   async create(data: Prisma.CommentCreateInput): Promise<Comment> {
-    return this.prisma.comment.create({
+    return prisma.comment.create({
       data,
       include: {
         user: { select: { id: true, nickname: true } },
@@ -17,20 +12,20 @@ export class CommentRepository {
   }
 
   async findById(id: number): Promise<Comment | null> {
-    return this.prisma.comment.findUnique({
+    return prisma.comment.findUnique({
       where: { id },
     });
   }
 
   async update(id: number, data: Prisma.CommentUpdateInput): Promise<Comment> {
-    return this.prisma.comment.update({
+    return prisma.comment.update({
       where: { id },
       data,
     });
   }
 
   async delete(id: number): Promise<Comment> {
-    return this.prisma.comment.delete({
+    return prisma.comment.delete({
       where: { id },
     });
   }
@@ -56,6 +51,6 @@ export class CommentRepository {
       query.skip = 1;
     }
 
-    return this.prisma.comment.findMany(query);
+    return prisma.comment.findMany(query);
   }
 }

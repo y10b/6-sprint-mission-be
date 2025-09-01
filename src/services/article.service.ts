@@ -6,10 +6,10 @@ import {
   BadRequestError,
 } from "../utils/customError";
 import {
-  ArticleWithDetails,
-  ArticleListResponse,
-  CreateArticleDto,
-  UpdateArticleDto,
+  IArticleWithDetails,
+  IArticleListResponse,
+  TCreateArticleDto,
+  TUpdateArticleDto,
 } from "../types/article.types";
 
 export class ArticleService {
@@ -25,7 +25,7 @@ export class ArticleService {
     sort: string,
     keyword: string,
     userId?: number
-  ): Promise<ArticleListResponse> {
+  ): Promise<IArticleListResponse> {
     const skip = (page - 1) * limit;
 
     // 정렬 조건 설정
@@ -69,7 +69,7 @@ export class ArticleService {
     };
   }
 
-  async getArticle(id: number, userId?: number): Promise<ArticleWithDetails> {
+  async getArticle(id: number, userId?: number): Promise<IArticleWithDetails> {
     const article = await this.articleRepository.findById(id);
 
     if (!article) {
@@ -91,8 +91,8 @@ export class ArticleService {
 
   async createArticle(
     authorId: number,
-    data: CreateArticleDto
-  ): Promise<ArticleWithDetails> {
+    data: TCreateArticleDto
+  ): Promise<IArticleWithDetails> {
     if (!data.title || !data.content) {
       throw new BadRequestError("제목과 내용을 모두 입력해주세요.");
     }
@@ -109,8 +109,8 @@ export class ArticleService {
   async updateArticle(
     id: number,
     authorId: number,
-    data: UpdateArticleDto
-  ): Promise<ArticleWithDetails> {
+    data: TUpdateArticleDto
+  ): Promise<IArticleWithDetails> {
     const article = await this.articleRepository.findById(id);
 
     if (!article) {

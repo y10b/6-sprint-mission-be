@@ -1,15 +1,15 @@
 import { Request, Response, NextFunction } from "express";
-import { LikeService } from "../services/like.service";
+import { FavoriteService } from "../services/favorite.service";
 import { BadRequestError } from "../utils/customError";
 
-export class LikeController {
-  private likeService: LikeService;
+export class FavoriteController {
+  private favoriteService: FavoriteService;
 
   constructor() {
-    this.likeService = new LikeService();
+    this.favoriteService = new FavoriteService();
   }
 
-  toggleLikeForProduct = async (
+  toggleFavoriteForProduct = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -23,7 +23,7 @@ export class LikeController {
         return;
       }
 
-      const result = await this.likeService.toggleProductLike(
+      const result = await this.favoriteService.toggleProductFavorite(
         Number(productId),
         userId
       );
@@ -33,7 +33,7 @@ export class LikeController {
     }
   };
 
-  toggleLikeForArticle = async (
+  toggleFavoriteForArticle = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -47,7 +47,7 @@ export class LikeController {
         return;
       }
 
-      const result = await this.likeService.toggleArticleLike(
+      const result = await this.favoriteService.toggleArticleFavorite(
         Number(articleId),
         userId
       );
@@ -57,7 +57,7 @@ export class LikeController {
     }
   };
 
-  removeLikeForProduct = async (
+  removeFavoriteForProduct = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -71,14 +71,20 @@ export class LikeController {
         return;
       }
 
-      await this.likeService.removeProductLike(Number(productId), userId);
-      res.status(204).send();
+      const result = await this.favoriteService.removeProductFavorite(
+        Number(productId),
+        userId
+      );
+      res.status(200).json({
+        message: "좋아요가 삭제되었습니다.",
+        favoriteCount: result.favoriteCount,
+      });
     } catch (error) {
       next(error);
     }
   };
 
-  removeLikeForArticle = async (
+  removeFavoriteForArticle = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -92,7 +98,10 @@ export class LikeController {
         return;
       }
 
-      await this.likeService.removeArticleLike(Number(articleId), userId);
+      await this.favoriteService.removeArticleFavorite(
+        Number(articleId),
+        userId
+      );
       res.status(204).send();
     } catch (error) {
       next(error);
@@ -101,12 +110,12 @@ export class LikeController {
 }
 
 // 컨트롤러 인스턴스 생성
-const likeController = new LikeController();
+const favoriteController = new FavoriteController();
 
 // 컨트롤러 메서드 export
 export const {
-  toggleLikeForProduct,
-  toggleLikeForArticle,
-  removeLikeForProduct,
-  removeLikeForArticle,
-} = likeController;
+  toggleFavoriteForProduct,
+  toggleFavoriteForArticle,
+  removeFavoriteForProduct,
+  removeFavoriteForArticle,
+} = favoriteController;

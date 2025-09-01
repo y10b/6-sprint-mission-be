@@ -1,18 +1,13 @@
-import { PrismaClient, Like } from "@prisma/client";
+import { Like } from "@prisma/client";
+import { prisma } from "../db/prisma";
 import { NotFoundError } from "../utils/customError";
 
-export class LikeService {
-  private prisma: PrismaClient;
-
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
-
-  async toggleArticleLike(
+export class FavoriteService {
+  async toggleArticleFavorite(
     articleId: number,
     userId: number
   ): Promise<{ liked: boolean }> {
-    const article = await this.prisma.article.findUnique({
+    const article = await prisma.article.findUnique({
       where: { id: articleId },
     });
 
@@ -20,7 +15,7 @@ export class LikeService {
       throw new NotFoundError("게시글을 찾을 수 없습니다.");
     }
 
-    const existingLike = await this.prisma.like.findUnique({
+    const existingFavorite = await prisma.like.findUnique({
       where: {
         userId_articleId: {
           userId,
@@ -29,8 +24,8 @@ export class LikeService {
       },
     });
 
-    if (existingLike) {
-      await this.prisma.like.delete({
+    if (existingFavorite) {
+      await prisma.like.delete({
         where: {
           userId_articleId: {
             userId,
@@ -40,7 +35,7 @@ export class LikeService {
       });
       return { liked: false };
     } else {
-      await this.prisma.like.create({
+      await prisma.like.create({
         data: {
           userId,
           articleId,
@@ -50,11 +45,11 @@ export class LikeService {
     }
   }
 
-  async toggleProductLike(
+  async toggleProductFavorite(
     productId: number,
     userId: number
-  ): Promise<{ liked: boolean }> {
-    const product = await this.prisma.product.findUnique({
+  ): Promise<{ liked: boolean; favoriteCount: number }> {
+    const product = await prisma.product.findUnique({
       where: { id: productId },
     });
 
@@ -62,7 +57,7 @@ export class LikeService {
       throw new NotFoundError("상품을 찾을 수 없습니다.");
     }
 
-    const existingLike = await this.prisma.like.findUnique({
+    const existingFavorite = await prisma.like.findUnique({
       where: {
         userId_productId: {
           userId,
@@ -71,8 +66,8 @@ export class LikeService {
       },
     });
 
-    if (existingLike) {
-      await this.prisma.like.delete({
+    if (existingFavorite) {
+      await prisma.like.delete({
         where: {
           userId_productId: {
             userId,
@@ -80,20 +75,33 @@ export class LikeService {
           },
         },
       });
-      return { liked: false };
+
+      const favoriteCount = await prisma.like.count({
+        where: { productId },
+      });
+
+      return { liked: false, favoriteCount };
     } else {
-      await this.prisma.like.create({
+      await prisma.like.create({
         data: {
           userId,
           productId,
         },
       });
-      return { liked: true };
+
+      const favoriteCount = await prisma.like.count({
+        where: { productId },
+      });
+
+      return { liked: true, favoriteCount };
     }
   }
 
-  async removeArticleLike(articleId: number, userId: number): Promise<void> {
-    const like = await this.prisma.like.findUnique({
+  async removeArticleFavorite(
+    articleId: number,
+    userId: number
+  ): Promise<void> {
+    const favorite = await prisma.like.findUnique({
       where: {
         userId_articleId: {
           userId,
@@ -102,11 +110,11 @@ export class LikeService {
       },
     });
 
-    if (!like) {
+    if (!favorite) {
       throw new NotFoundError("좋아요를 찾을 수 없습니다.");
     }
 
-    await this.prisma.like.delete({
+    await prisma.like.delete({
       where: {
         userId_articleId: {
           userId,
@@ -116,8 +124,11 @@ export class LikeService {
     });
   }
 
-  async removeProductLike(productId: number, userId: number): Promise<void> {
-    const like = await this.prisma.like.findUnique({
+  async removeProductFavorite(
+    productId: number,
+    userId: number
+  ): Promise<{ favoriteCount: number }> {
+    const favorite = await prisma.like.findUnique({
       where: {
         userId_productId: {
           userId,
@@ -126,11 +137,11 @@ export class LikeService {
       },
     });
 
-    if (!like) {
+    if (!favorite) {
       throw new NotFoundError("좋아요를 찾을 수 없습니다.");
     }
 
-    await this.prisma.like.delete({
+    await prisma.like.delete({
       where: {
         userId_productId: {
           userId,
@@ -138,5 +149,14 @@ export class LikeService {
         },
       },
     });
+
+    // 삭제 후 남은 좋아요 수 계산
+    const favoriteCount = await prisma.like.count({
+      where: {
+        productId,
+      },
+    });
+
+    return { favoriteCount };
   }
 }

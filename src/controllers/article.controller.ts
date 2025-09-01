@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { prisma } from "../db/prisma";
 import { NotFoundError, BadRequestError } from "../utils/customError";
 import { ArticleService } from "../services/article.service";
 import { AuthRequest } from "../types/express";
-
-const prisma = new PrismaClient();
 
 // 모든 게시글 조회
 export const getAllArticles = async (

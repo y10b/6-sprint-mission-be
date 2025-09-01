@@ -21,22 +21,16 @@ const verifyToken = (token: string) => {
 
 const createAuthMiddleware = (required: boolean): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction) => {
-    console.log("Cookies received:", req.cookies);
-    console.log("Headers received:", req.headers);
-
     const token = req.cookies.accessToken;
-    console.log("Access token from cookies:", token);
 
     if (!token) {
       if (required) {
-        console.log("No token found in request");
         return next(new UnauthorizedError("로그인이 필요합니다."));
       }
       return next();
     }
 
     const decoded = verifyToken(token);
-    console.log("Decoded token:", decoded);
 
     if (!decoded) {
       if (required) {

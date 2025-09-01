@@ -1,53 +1,91 @@
-import { PrismaClient, User, Prisma } from "@prisma/client";
+import { User } from "@prisma/client";
+import { prisma } from "../db/prisma";
+import { TId } from "../types/express.d";
+import {
+  IUserRepository,
+  TCreateUserData,
+  TUpdateUserData,
+  TUserProfile,
+} from "../types/user.types";
 
-export class UserRepository {
-  private prisma: PrismaClient;
-
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
-
+/**
+ * 사용자 레포지토리
+ * 사용자 데이터베이스 접근을 담당합니다.
+ */
+export class UserRepository implements IUserRepository {
+  /**
+   * 이메일로 사용자를 조회합니다.
+   */
   async findByEmail(email: string): Promise<User | null> {
-    return this.prisma.user.findUnique({
+    return prisma.user.findUnique({
       where: { email },
     });
   }
 
+  /**
+   * 닉네임으로 사용자를 조회합니다.
+   */
   async findByNickname(nickname: string): Promise<User | null> {
-    return this.prisma.user.findUnique({
+    return prisma.user.findUnique({
       where: { nickname },
     });
   }
 
-  async findById(id: number): Promise<User | null> {
-    return this.prisma.user.findUnique({
+  /**
+   * ID로 사용자를 조회합니다.
+   */
+  async findById(id: TId): Promise<User | null> {
+    return prisma.user.findUnique({
       where: { id },
     });
   }
 
-  async create(data: Prisma.UserCreateInput): Promise<User> {
-    return this.prisma.user.create({
+  /**
+   * 새로운 사용자를 생성합니다.
+   */
+  async create(data: TCreateUserData): Promise<User> {
+    return prisma.user.create({
       data,
     });
   }
 
-  async update(id: number, data: Prisma.UserUpdateInput): Promise<User> {
-    return this.prisma.user.update({
+  /**
+   * 사용자 정보를 업데이트합니다.
+   */
+  async update(id: TId, data: TUpdateUserData): Promise<User> {
+    return prisma.user.update({
       where: { id },
       data,
     });
   }
 
-  async findByIdWithProfile(id: number): Promise<Partial<User> | null> {
-    return this.prisma.user.findUnique({
+  /**
+   * ID로 사용자 프로필 정보를 조회합니다.
+   */
+  async findByIdWithProfile(id: TId): Promise<TUserProfile | null> {
+    return prisma.user.findUnique({
       where: { id },
       select: {
         id: true,
         email: true,
         nickname: true,
-        createdAt: true,
         image: true,
+        createdAt: true,
+        updatedAt: true,
       },
+    });
+  }
+
+  /**
+   * 사용자의 리프레시 토큰을 업데이트합니다.
+   */
+  async updateRefreshToken(
+    id: TId,
+    refreshToken: string | null
+  ): Promise<User> {
+    return prisma.user.update({
+      where: { id },
+      data: { refreshToken },
     });
   }
 }

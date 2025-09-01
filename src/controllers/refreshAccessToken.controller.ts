@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/auth.service";
-import { TokenResponse } from "../types/auth.types";
+import { ITokenResponse } from "../types/express.d";
 
 const authService = new AuthService();
 

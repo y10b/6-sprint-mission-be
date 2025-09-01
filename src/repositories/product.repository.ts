@@ -1,4 +1,5 @@
-import { PrismaClient, Product, Prisma } from "@prisma/client";
+import { Product, Prisma } from "@prisma/client";
+import { prisma } from "../db/prisma";
 
 interface CreateProductData {
   name: string;
@@ -17,12 +18,6 @@ interface UpdateProductData {
 }
 
 export class ProductRepository {
-  private prisma: PrismaClient;
-
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
-
   async findAll(
     skip: number,
     take: number,
@@ -44,8 +39,8 @@ export class ProductRepository {
       : {};
 
     return Promise.all([
-      this.prisma.product.count({ where }),
-      this.prisma.product.findMany({
+      prisma.product.count({ where }),
+      prisma.product.findMany({
         where,
         orderBy,
         skip,
@@ -62,7 +57,7 @@ export class ProductRepository {
   }
 
   async findById(id: number) {
-    return this.prisma.product.findUnique({
+    return prisma.product.findUnique({
       where: { id },
       include: {
         comments: true,
@@ -78,7 +73,7 @@ export class ProductRepository {
   }
 
   async create(data: CreateProductData, userId: number) {
-    return this.prisma.product.create({
+    return prisma.product.create({
       data: {
         name: data.name,
         description: data.description,
@@ -96,7 +91,7 @@ export class ProductRepository {
     const { imageUrls, ...productData } = data;
 
     // 트랜잭션으로 처리
-    return this.prisma.$transaction(async (prisma) => {
+    return prisma.$transaction(async (prisma) => {
       // 기존 이미지 삭제
       if (imageUrls) {
         await prisma.product.update({
@@ -140,16 +135,16 @@ export class ProductRepository {
 
   async delete(id: number) {
     // 트랜잭션으로 관련 데이터 모두 삭제
-    return this.prisma.$transaction([
-      this.prisma.comment.deleteMany({ where: { productId: id } }),
-      this.prisma.like.deleteMany({ where: { productId: id } }),
-      this.prisma.productImage.deleteMany({ where: { productId: id } }),
-      this.prisma.product.delete({ where: { id } }),
+    return prisma.$transaction([
+      prisma.comment.deleteMany({ where: { productId: id } }),
+      prisma.like.deleteMany({ where: { productId: id } }),
+      prisma.productImage.deleteMany({ where: { productId: id } }),
+      prisma.product.delete({ where: { id } }),
     ]);
   }
 
   async checkLikeStatus(productId: number, userId: number) {
-    return this.prisma.like.findFirst({
+    return prisma.like.findFirst({
       where: {
         productId,
         userId,

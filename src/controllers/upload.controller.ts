@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { UploadResponse } from "../types/upload.types";
+import { IUploadResponse } from "../types/upload.types";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { UploadService } from "../services/upload.service";
@@ -11,7 +11,7 @@ interface FileRequest extends Request {
 
 export const uploadImage = async (
   req: FileRequest,
-  res: Response<UploadResponse>,
+  res: Response<IUploadResponse>,
   next: NextFunction
 ): Promise<void> => {
   try {
