@@ -1,15 +1,15 @@
 import { Request, Response, NextFunction } from "express";
-import { ProductInput, ValidationError } from "../types/product.types";
+import { IProductInput, TValidationError } from "../types/product.types";
 
 interface ProductRequest extends Request {
-  body: ProductInput;
+  body: IProductInput;
 }
 
 export const validateProductInput = (
   req: ProductRequest,
-  res: Response<ValidationError>,
+  res: Response<TValidationError>,
   next: NextFunction
-): Response<ValidationError> | void => {
+): Response<TValidationError> | void => {
   const { name, description, price } = req.body;
 
   // 이름 검증: 문자열 + 길이 2~14자
