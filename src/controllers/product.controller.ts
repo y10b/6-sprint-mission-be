@@ -6,11 +6,6 @@ import {
   UnauthorizedError,
 } from "../utils/customError";
 
-interface CustomError extends Error {
-  statusCode?: number;
-  message: string;
-}
-
 const productService = new ProductService();
 
 export const getAllProducts = async (

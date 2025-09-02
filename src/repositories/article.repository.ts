@@ -2,7 +2,7 @@ import { Article, Prisma } from "@prisma/client";
 import { prisma } from "../db/prisma";
 import { TCreateArticleDto, TUpdateArticleDto } from "../types/article.types";
 
-interface ArticleWithAuthor extends Article {
+interface IArticleWithAuthor extends Article {
   author: {
     id: number;
     nickname: string;
@@ -19,7 +19,7 @@ export class ArticleRepository {
     take: number,
     keyword: string,
     orderBy: Prisma.ArticleOrderByWithRelationInput
-  ): Promise<[number, ArticleWithAuthor[]]> {
+  ): Promise<[number, IArticleWithAuthor[]]> {
     const where = keyword
       ? {
           OR: [
@@ -54,11 +54,11 @@ export class ArticleRepository {
             },
           },
         },
-      }) as Promise<ArticleWithAuthor[]>,
+      }) as Promise<IArticleWithAuthor[]>,
     ]);
   }
 
-  async findById(id: number): Promise<ArticleWithAuthor | null> {
+  async findById(id: number): Promise<IArticleWithAuthor | null> {
     return prisma.article.findUnique({
       where: { id },
       include: {
@@ -75,13 +75,13 @@ export class ArticleRepository {
           },
         },
       },
-    }) as Promise<ArticleWithAuthor | null>;
+    }) as Promise<IArticleWithAuthor | null>;
   }
 
   async create(
     data: TCreateArticleDto,
     authorId: number
-  ): Promise<ArticleWithAuthor> {
+  ): Promise<IArticleWithAuthor> {
     return prisma.article.create({
       data: {
         ...data,
@@ -101,13 +101,13 @@ export class ArticleRepository {
           },
         },
       },
-    }) as Promise<ArticleWithAuthor>;
+    }) as Promise<IArticleWithAuthor>;
   }
 
   async update(
     id: number,
     data: TUpdateArticleDto
-  ): Promise<ArticleWithAuthor> {
+  ): Promise<IArticleWithAuthor> {
     return prisma.article.update({
       where: { id },
       data,
@@ -125,7 +125,7 @@ export class ArticleRepository {
           },
         },
       },
-    }) as Promise<ArticleWithAuthor>;
+    }) as Promise<IArticleWithAuthor>;
   }
 
   async delete(id: number) {

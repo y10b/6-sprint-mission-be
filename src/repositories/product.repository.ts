@@ -1,7 +1,7 @@
 import { Product, Prisma } from "@prisma/client";
 import { prisma } from "../db/prisma";
 
-interface CreateProductData {
+interface ICreateProductData {
   name: string;
   description: string;
   price: number;
@@ -9,7 +9,7 @@ interface CreateProductData {
   imageUrls: string[];
 }
 
-interface UpdateProductData {
+interface IUpdateProductData {
   name?: string;
   description?: string;
   price?: number;
@@ -72,7 +72,7 @@ export class ProductRepository {
     });
   }
 
-  async create(data: CreateProductData, userId: number) {
+  async create(data: ICreateProductData, userId: number) {
     return prisma.product.create({
       data: {
         name: data.name,
@@ -87,7 +87,7 @@ export class ProductRepository {
     });
   }
 
-  async update(id: number, data: UpdateProductData) {
+  async update(id: number, data: IUpdateProductData) {
     const { imageUrls, ...productData } = data;
 
     // 트랜잭션으로 처리

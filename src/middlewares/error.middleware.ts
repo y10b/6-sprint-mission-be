@@ -7,12 +7,12 @@ import {
 } from "../utils/customError";
 import { ErrorRequestHandler, Request, Response, NextFunction } from "express";
 
-interface CustomError extends Error {
+interface ICustomError extends Error {
   statusCode: number;
 }
 
 export const errorHandler: ErrorRequestHandler = (
-  err: CustomError,
+  err: ICustomError,
   req: Request,
   res: Response,
   next: NextFunction

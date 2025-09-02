@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "../db/prisma";
 import { NotFoundError, BadRequestError } from "../utils/customError";
 import { ArticleService } from "../services/article.service";
-import { AuthRequest } from "../types/express";
+import { IAuthRequest } from "../types/express";
 
 // 모든 게시글 조회
 export const getAllArticles = async (
@@ -116,7 +116,7 @@ export class ArticleController {
   ): Promise<void> {
     try {
       const { page = 1, limit = 10, sort = "latest", keyword = "" } = req.query;
-      const userId = (req as AuthRequest).user?.id;
+      const userId = (req as IAuthRequest).user?.id;
 
       const result = await this.articleService.getAllArticles(
         Number(page),
@@ -133,7 +133,7 @@ export class ArticleController {
   }
 
   async getArticle(
-    req: AuthRequest,
+    req: IAuthRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -149,7 +149,7 @@ export class ArticleController {
   }
 
   async createArticle(
-    req: AuthRequest,
+    req: IAuthRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -174,7 +174,7 @@ export class ArticleController {
   }
 
   async updateArticle(
-    req: AuthRequest,
+    req: IAuthRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -204,7 +204,7 @@ export class ArticleController {
   }
 
   async deleteArticle(
-    req: AuthRequest,
+    req: IAuthRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
