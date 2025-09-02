@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
-import { AuthRequest } from "../types/express";
+import { IAuthRequest } from "../types/express";
 import { UnauthorizedError } from "../utils/customError";
 
-interface AuthenticateToken extends RequestHandler {
+interface IAuthenticateToken extends RequestHandler {
   required: RequestHandler;
   optional: RequestHandler;
 }
@@ -39,7 +39,7 @@ const createAuthMiddleware = (required: boolean): RequestHandler => {
       return next();
     }
 
-    (req as AuthRequest).user = {
+    (req as IAuthRequest).user = {
       id: decoded.userId,
       email: "",
       nickname: "",
@@ -50,7 +50,7 @@ const createAuthMiddleware = (required: boolean): RequestHandler => {
   };
 };
 
-const authenticateToken = createAuthMiddleware(true) as AuthenticateToken;
+const authenticateToken = createAuthMiddleware(true) as IAuthenticateToken;
 authenticateToken.required = createAuthMiddleware(true);
 authenticateToken.optional = createAuthMiddleware(false);
 

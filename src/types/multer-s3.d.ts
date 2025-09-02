@@ -3,7 +3,7 @@ declare module "multer-s3" {
   import { StorageEngine } from "multer";
   import { S3Client } from "@aws-sdk/client-s3";
 
-  interface MulterS3Options {
+  interface IMulterS3Options {
     s3: S3Client;
     bucket:
       | string
@@ -38,7 +38,7 @@ declare module "multer-s3" {
         ) => void);
   }
 
-  function multerS3(options: MulterS3Options): StorageEngine & {
+  function multerS3(options: IMulterS3Options): StorageEngine & {
     AUTO_CONTENT_TYPE: (
       req: Request,
       file: any,

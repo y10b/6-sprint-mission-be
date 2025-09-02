@@ -5,12 +5,12 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { UploadService } from "../services/upload.service";
 
 // Multer-S3가 추가한 location 필드를 포함한 타입 확장
-interface FileRequest extends Request {
+interface IFileRequest extends Request {
   file?: Express.Multer.File & { location?: string };
 }
 
 export const uploadImage = async (
-  req: FileRequest,
+  req: IFileRequest,
   res: Response<IUploadResponse>,
   next: NextFunction
 ): Promise<void> => {

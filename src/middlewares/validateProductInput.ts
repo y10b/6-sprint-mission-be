@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import { IProductInput, TValidationError } from "../types/product.types";
 
-interface ProductRequest extends Request {
+interface IProductRequest extends Request {
   body: IProductInput;
 }
 
 export const validateProductInput = (
-  req: ProductRequest,
+  req: IProductRequest,
   res: Response<TValidationError>,
   next: NextFunction
 ): Response<TValidationError> | void => {
