@@ -31,7 +31,7 @@ class AuthService {
                     throw new customError_1.BadRequestError("유효하지 않은 리프레시 토큰입니다.");
                 }
                 const newAccessToken = jsonwebtoken_1.default.sign({ userId: user.id }, this.jwtSecret, {
-                    expiresIn: "15m",
+                    expiresIn: "1h", // 15분에서 1시간으로 연장
                 });
                 return newAccessToken;
             }

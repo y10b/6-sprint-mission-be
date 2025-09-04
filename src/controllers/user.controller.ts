@@ -17,18 +17,21 @@ const ACCESS_SECRET = process.env.JWT_SECRET || "";
 const REFRESH_SECRET = process.env.JWT_SECRET || "";
 
 const createAccessToken = (user: User): TAccessToken =>
-  jwt.sign({ userId: user.id }, ACCESS_SECRET, { expiresIn: "15m" });
+  jwt.sign({ userId: user.id }, ACCESS_SECRET, { expiresIn: "1h" }); // 15분에서 1시간으로 연장
 
 const createRefreshToken = (user: User): TRefreshToken =>
   jwt.sign({ userId: user.id }, REFRESH_SECRET, { expiresIn: "7d" });
 
 /**
  * 쿠키 옵션 생성 유틸리티
+ * 개발환경과 배포환경 모두에서 안정적인 세션 유지를 위한 설정
  */
 const getCookieOptions = (): TCookieOptions => ({
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  httpOnly: true, // XSS 공격 방지를 위해 JavaScript에서 접근 불가
+  secure: process.env.NODE_ENV === "production", // HTTPS에서만 전송 (프로덕션)
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // 개발환경에서 lax 정책 사용
+  path: "/", // 모든 경로에서 쿠키 접근 가능
+  // 개발환경에서는 도메인 설정 제거 (localhost 문제 방지)
 });
 
 const userService = new UserService();
@@ -77,7 +80,7 @@ export const loginUser = async (
     // accessToken도 httpOnly 쿠키로 설정
     res.cookie("accessToken", accessToken, {
       ...cookieOptions,
-      maxAge: 15 * 60 * 1000, // 15분
+      maxAge: 60 * 60 * 1000, // 1시간 (토큰 만료시간과 일치)
     });
 
     // 응답에는 민감하지 않은 사용자 정보만 포함
