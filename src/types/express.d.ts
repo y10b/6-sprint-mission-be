@@ -89,6 +89,7 @@ export type TCookieOptions = {
   httpOnly: boolean;
   secure: boolean;
   sameSite: "none" | "lax" | "strict";
+  path: string;
   maxAge?: number;
   domain?: string;
 };

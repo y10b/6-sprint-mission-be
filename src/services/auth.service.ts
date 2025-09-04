@@ -24,7 +24,7 @@ export class AuthService {
       }
 
       const newAccessToken = jwt.sign({ userId: user.id }, this.jwtSecret, {
-        expiresIn: "15m",
+        expiresIn: "1h", // 15분에서 1시간으로 연장
       });
 
       return newAccessToken;

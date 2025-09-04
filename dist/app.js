@@ -42,7 +42,7 @@ const corsOrigins = process.env.CORS_ORIGINS
         ];
 const corsOptions = {
     origin: corsOrigins, // 환경변수에서 읽은 origins 사용
-    credentials: true,
+    credentials: true, // 쿠키 포함 요청 허용
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: [
         "Content-Type",
@@ -51,10 +51,13 @@ const corsOptions = {
         "X-Requested-With",
         "Accept",
         "Origin",
+        "Cache-Control",
+        "Pragma",
     ],
-    exposedHeaders: ["Set-Cookie"],
+    exposedHeaders: ["Set-Cookie", "Content-Length"], // 필요한 헤더 노출
     preflightContinue: false,
     optionsSuccessStatus: 204,
+    maxAge: 86400, // preflight 캐시 시간 (24시간)
 };
 app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());

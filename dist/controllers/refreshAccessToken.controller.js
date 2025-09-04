@@ -25,12 +25,14 @@ const refreshAccessToken = (req, res, next) => __awaiter(void 0, void 0, void 0,
     try {
         const newAccessToken = yield authService.refreshAccessToken(refreshToken);
         // 개발/프로덕션 환경에 따른 쿠키 설정
+        // 세션 유지 개선을 위한 쿠키 옵션 설정
         const cookieOptions = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            maxAge: 15 * 60 * 1000, // 15분
-            // domain 설정을 제거하여 크로스 도메인 쿠키 문제 해결
+            httpOnly: true, // XSS 공격 방지
+            secure: process.env.NODE_ENV === "production", // HTTPS에서만 전송 (프로덕션)
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // 개발환경에서 lax 정책 사용
+            maxAge: 60 * 60 * 1000, // 1시간 (토큰 만료시간과 일치)
+            path: "/", // 모든 경로에서 접근 가능
+            // 개발환경에서는 도메인 설정 제거 (localhost 호환성 확보)
         };
         // 새로운 액세스 토큰을 쿠키에 설정
         res.cookie("accessToken", newAccessToken, cookieOptions);
