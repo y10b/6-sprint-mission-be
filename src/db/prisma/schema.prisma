@@ -26,6 +26,7 @@ model Article {
   id        Int       @id @default(autoincrement())
   title     String
   content   String
+  images    String? // 이미지 URL 필드 추가
   authorId  Int
   comments  Comment[]
   likes     Like[]
